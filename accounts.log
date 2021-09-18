@@ -1,0 +1,36 @@
+kilogold@PC-DL63:~$ subkey generate --scheme sr25519
+Secret phrase:       innocent animal airport come tissue torch right smart diamond similar fit vast
+  Secret seed:       0x227c672ec76923d1dcb3a670383c758a5dc46c952073559eda4a149cb0fdea1a
+  Public key (hex):  0xa6a25868698090a46184a216786cdc02e8c87aafa4502f8a4a504a1032c8421f
+  Account ID:        0xa6a25868698090a46184a216786cdc02e8c87aafa4502f8a4a504a1032c8421f
+  Public key (SS58): 5FqC2r8MawBvLb2V64rh2xa3VuXNY5K7v2Aq7XbtKq69CUq1
+  SS58 Address:      5FqC2r8MawBvLb2V64rh2xa3VuXNY5K7v2Aq7XbtKq69CUq1
+kilogold@PC-DL63:~$ subkey inspect --scheme ed25519 "innocent animal airport come tissue torch right smart diamond similar fit vast"
+Secret phrase:       innocent animal airport come tissue torch right smart diamond similar fit vast
+  Secret seed:       0x227c672ec76923d1dcb3a670383c758a5dc46c952073559eda4a149cb0fdea1a
+  Public key (hex):  0xfa07b8af6d441c37044048c1da3788e25a8ab380b13710eec323889efc79c972
+  Account ID:        0xfa07b8af6d441c37044048c1da3788e25a8ab380b13710eec323889efc79c972
+  Public key (SS58): 5HiY82vp9eP3uLgL5sotRKhQFn2YpmkNVbiSXUV4aQpbHqiL
+  SS58 Address:      5HiY82vp9eP3uLgL5sotRKhQFn2YpmkNVbiSXUV4aQpbHqiL
+kilogold@PC-DL63:~$ echo "Kelvin"
+Kelvin
+kilogold@PC-DL63:~$
+kilogold@PC-DL63:~$
+kilogold@PC-DL63:~$
+kilogold@PC-DL63:~$
+kilogold@PC-DL63:~$ subkey generate --scheme sr25519
+Secret phrase:       faith mask embody sea slogan little civil swing surround spray initial snake
+  Secret seed:       0x5fb95b328b5bea8d370b4889eae209dd2ba27aac2d300c8e99c1095d1f9b5c0d
+  Public key (hex):  0x72a0cd53d302406018f802b753016332fc906c653d37bbda99aeca4f84a6a95d
+  Account ID:        0x72a0cd53d302406018f802b753016332fc906c653d37bbda99aeca4f84a6a95d
+  Public key (SS58): 5Ef15qXKdjzwXFk9g5CbyBr6GDMH31ZR1guDTm8iqqmFj8kH
+  SS58 Address:      5Ef15qXKdjzwXFk9g5CbyBr6GDMH31ZR1guDTm8iqqmFj8kH
+kilogold@PC-DL63:~$ subkey inspect --scheme ed25519 "faith mask embody sea slogan little civil swing surround spray initial snake"
+Secret phrase:       faith mask embody sea slogan little civil swing surround spray initial snake
+  Secret seed:       0x5fb95b328b5bea8d370b4889eae209dd2ba27aac2d300c8e99c1095d1f9b5c0d
+  Public key (hex):  0x400f865acd1a80a1bf597e82a81f450d7bc3aaa6fe5c3d356b269bdd3ccb80a2
+  Account ID:        0x400f865acd1a80a1bf597e82a81f450d7bc3aaa6fe5c3d356b269bdd3ccb80a2
+  Public key (SS58): 5DWhXuLnFcFjaVRcxtgZsQmZnVyAMJPeMUWzd8FxfPGRpXox
+  SS58 Address:      5DWhXuLnFcFjaVRcxtgZsQmZnVyAMJPeMUWzd8FxfPGRpXox
+kilogold@PC-DL63:~$ echo "Javier"
+Javier

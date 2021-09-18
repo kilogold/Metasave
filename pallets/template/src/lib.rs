@@ -38,6 +38,10 @@ pub mod pallet {
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
 	pub type Something<T> = StorageValue<_, u32>;
 
+	#[pallet::storage]
+	#[pallet::getter(fn score)]
+	pub(super) type Score<T> = StorageValue<_, u32>;
+
 	// Pallets use events to inform users when important changes are made.
 	// https://substrate.dev/docs/en/knowledgebase/runtime/events
 	#[pallet::event]
@@ -47,6 +51,9 @@ pub mod pallet {
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters. [something, who]
 		SomethingStored(u32, T::AccountId),
+
+		// [current level, who leveled up]
+		LevelUp(u32, T::AccountId)
 	}
 
 	// Errors inform users that something went wrong.
@@ -98,6 +105,36 @@ pub mod pallet {
 					Ok(())
 				},
 			}
+		}
+
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+		pub fn increment_score(origin: OriginFor<T>) -> DispatchResult {
+			// Check that the extrinsic was signed and get the signer.
+			// This function will return an error if the extrinsic is not signed.
+			// https://substrate.dev/docs/en/knowledgebase/runtime/origin
+			let who = ensure_signed(origin)?;
+
+			let new_score;
+
+			// Read a value from storage.
+			match <Score<T>>::get() {
+				None => {
+					// Update the value with initial score point.
+					new_score = 1;	
+				}
+
+				Some(old) => {
+					// Increment the value read from storage; will error in the event of overflow.
+					new_score = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
+				},
+			}
+
+			// Update the value in storage with the incremented result.
+			<Score<T>>::put(new_score);
+
+			Self::deposit_event(Event::LevelUp(new_score, who));
+
+			Ok(())		
 		}
 	}
 }
