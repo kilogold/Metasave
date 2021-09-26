@@ -23,21 +23,6 @@ pub mod pallet {
 	type Skey = Vec<u8>;
 	type Sval = Vec<u8>;
 
-	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default)]
-	pub struct SaveData<KeyValMapType>
-	{
-		public : KeyValMapType,
-		internal : KeyValMapType,
-	}
-
-	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default)]
-	pub struct GameData<KeyValMapType, AccountIdType>
-	{
-		game_authorities : Vec<AccountIdType>,
-		world : SaveData<KeyValMapType>,
-		//users : StorageMap<T, Twox64Concat, T::AccountId, SaveData<T>, ValueQuery>,
-	}
-
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -62,12 +47,24 @@ pub mod pallet {
 	pub(super) type Score<T> = StorageValue<_, u32>;
 
 
-	//type KeyValueMap = StorageMap<T: Config, Twox64Concat, Skey, Sval, ValueQuery>;
-	type KeyValueMap = u32;
+	type DataEntry = (Skey,Sval);
+	type DataRecord = Vec<DataEntry>;
+	pub(super) type GameAccount<T:Config> = (GameID,T::AccountId);
 
 	#[pallet::storage]
-	#[pallet::getter(fn save_registry)]
-	pub(super) type SaveRegistry<T: Config> = StorageMap<_, Twox64Concat, GameID, GameData<KeyValueMap, T::AccountId>, ValueQuery>;
+	pub(super) type WorldDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, GameID, DataRecord, ValueQuery>;
+
+	#[pallet::storage]
+	pub(super) type WorldDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, GameID, DataRecord, ValueQuery>;
+
+	#[pallet::storage]
+	pub(super) type UserDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, GameAccount<T>, DataRecord, ValueQuery>;
+
+	#[pallet::storage]
+	pub(super) type UserDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, GameAccount<T>, DataRecord, ValueQuery>;
+
+	#[pallet::storage]
+	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, Vec<GameID>, ValueQuery>;
 
 
 	// Pallets use events to inform users when important changes are made.
