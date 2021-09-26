@@ -1,0 +1,6 @@
+{
+    "GameID": "u32",
+    "Access": {
+      "_enum": ["External", "InternalExternal"]
+    }
+}
