@@ -23,6 +23,18 @@ pub mod pallet {
 	use frame_system::pallet_prelude::*;
 	use sp_std::prelude::*;
 
+	#[derive(Encode, Decode, Debug, Clone, PartialEq)]
+	pub enum Access {
+		External,
+		InternalExternal,
+	}
+
+	impl Default for Access {
+		fn default() -> Self {
+			Access::External
+		}
+	}
+
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -59,14 +71,15 @@ pub mod pallet {
 	#[pallet::getter(fn score)]
 	pub(super) type Score<T> = StorageValue<_, u32>;
 
-	// type Skey = Vec<u8>;
-	// type Sval = Vec<u8>;
-	// type DataEntry = (Skey,Sval);
-	// type DataRecord = Vec<DataEntry>;
+	type Skey = Vec<u8>;
+	type Sval = Vec<u8>;
+	type DataEntry = (Skey,Sval);
+	type DataRecord = Vec<DataEntry>;
+	type Permission<T> = (<T as self::Config>::GameID, Access);
 	// pub(super) type GameAccount<T:Config> = (T::GameID, T::AccountId);
 
-	// #[pallet::storage]
-	// pub(super) type WorldDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, T::GameID, DataRecord, ValueQuery>;
+	#[pallet::storage]
+	pub(super) type WorldDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, T::GameID, DataRecord, ValueQuery>;
 
 	// #[pallet::storage]
 	// pub(super) type WorldDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, T::GameID, DataRecord, ValueQuery>;
@@ -79,7 +92,7 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn authorities_map)]
-	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, Vec<T::GameID>, ValueQuery>;
+	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, Vec<Permission<T>>, ValueQuery>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
@@ -107,6 +120,44 @@ pub mod pallet {
 		AlreadyRegisteredAuthority,
 
 		InvalidAuthority,
+	}
+
+	fn is_authority<T: Config>(who : &T::AccountId, game : T::GameID) -> (bool, Access)
+	{
+		let badResult = (false, Access::default());
+
+		// Are they listed in authorities at all?
+		let permissions = match <AuthoritiesMap<T>>::try_get(who)
+		{
+			Err(e) => {return badResult;},
+			Ok(p) => p
+		};
+
+		// Do they have authority for the specified game?
+		for p in permissions
+		{
+			if p.0 == game
+			{
+				return (true, p.1);
+			}
+		}
+
+		badResult
+	}
+
+	fn game_exists<T: Config>(game : &T::GameID) -> bool
+	{
+		for authority in <AuthoritiesMap<T>>::iter()
+		{
+			let permissions = authority.1;
+
+			if permissions.iter().any(|e| e.0 == *game)
+			{
+				return true;
+			}
+		}
+
+		false
 	}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -180,47 +231,77 @@ pub mod pallet {
 
 			Ok(())		
 		}
-		
+
 		#[pallet::weight(10_000)]
 		pub fn register_game(origin: OriginFor<T>, game : T::GameID) -> DispatchResult
 		{
 			let who = ensure_signed(origin)?;
-			
-			for e in <AuthoritiesMap<T>>::iter()
-			{
-				let authorized_games = &e.1;
-				frame_support::ensure!(!authorized_games.contains(&game), Error::<T>::AlreadyRegisteredGame);
-			}
 
-			<AuthoritiesMap<T>>::insert(&who, vec!(game));
+			frame_support::ensure!(! game_exists::<T>(&game), Error::<T>::AlreadyRegisteredGame);
+
+			let new_entry = (game, Access::InternalExternal);
+			<AuthoritiesMap<T>>::insert(&who, vec!(new_entry));
 
 			Ok(())
 		}
 
 		#[pallet::weight(10_000)]
-		pub fn add_authority(origin: OriginFor<T>, game : T::GameID, new_authority : T::AccountId) -> DispatchResult
+		pub fn add_authority(origin: OriginFor<T>, game : T::GameID, new_authority : T::AccountId, access : Access) -> DispatchResult
 		{			
 			let who = ensure_signed(origin)?;
 
 			// Ensure only authorities add other authorities.
-			frame_support::ensure!(<AuthoritiesMap<T>>::contains_key(&who), Error::<T>::InvalidAuthority);
-			frame_support::ensure!(<AuthoritiesMap<T>>::get(&who).contains(&game), Error::<T>::InvalidAuthority);
+			let who_auth = is_authority::<T>(&who, game);
+			frame_support::ensure!(who_auth.0, Error::<T>::InvalidAuthority);
 
-			// Ensure no duplicate new authorities.
-			if !<AuthoritiesMap<T>>::contains_key(&new_authority)
+			// Ensure new authority is not already registered
+			let new_auth = is_authority::<T>(&new_authority, game);
+			frame_support::ensure!(!new_auth.0, Error::<T>::InvalidAuthority);
+
+			// Does new authority have a map entry?
+			match <AuthoritiesMap<T>>::try_get(new_authority.clone()) //Hack: workaround for borrowing in match arms.
 			{
-				<AuthoritiesMap<T>>::insert(&new_authority, vec!(game));
-			}
-			else
-			{
-				frame_support::ensure!(!<AuthoritiesMap<T>>::get(&new_authority).contains(&game), Error::<T>::InvalidAuthority);		
-				// Modify the authorities map to include a new authority
-				<AuthoritiesMap<T>>::mutate(&new_authority, |x| {x.push(game);} );
-			}
+				// Update entry.
+				Ok(_) => {
+					<AuthoritiesMap<T>>::mutate(&new_authority, |x| {
+						let entry = (game,access);
+						x.push(entry);
+					});
+				},
 
-
+				// Create entry.
+				Err(_) => {
+					let new_entry = (game, access);
+					<AuthoritiesMap<T>>::insert(&new_authority, vec!(new_entry));
+				}
+			};
 
 			Ok(())
+		}
+
+		#[pallet::weight(10_000)]
+		pub fn remove_authority(origin: OriginFor<T>, game : T::GameID, removed_authority : T::AccountId) -> DispatchResult
+		{			
+			let who = ensure_signed(origin)?;
+
+			// Ensure only authorities remove authorities.
+			let who_auth = is_authority::<T>(&who, game);
+			frame_support::ensure!(who_auth.0, Error::<T>::InvalidAuthority);
+
+			// If removing auhtority other than self...
+			if who != removed_authority
+			{
+				// Ensure removed authority is already registered
+				let new_auth = is_authority::<T>(&removed_authority, game);
+				frame_support::ensure!(new_auth.0, Error::<T>::InvalidAuthority);
+			}
+
+			// Mutate for removal & return Result. We should not error here at this point.
+			<AuthoritiesMap<T>>::mutate(&removed_authority, |x| {
+				let index = x.iter().position(|p| p.0 == game).ok_or(Error::<T>::InvalidAuthority)?;
+				x.swap_remove(index); 
+				Ok(())
+			})
 		}
 	}
 }
