@@ -55,6 +55,7 @@ impl system::Config for Test {
 
 impl pallet_template::Config for Test {
 	type Event = Event;
+	type GameID = u32;
 }
 
 // Build genesis storage according to the mock runtime.

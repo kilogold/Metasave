@@ -16,18 +16,31 @@ mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+	use sp_runtime::traits::MaybeDisplay;
+	use sp_runtime::traits::AtLeast32Bit;	
+	use frame_support::dispatch::fmt::Debug;
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
 	use sp_std::prelude::*;
-	type GameID = Vec<u8>;
-	type Skey = Vec<u8>;
-	type Sval = Vec<u8>;
 
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
+		/// Account index (aka nonce) type. This stores the number of previous transactions
+		/// associated with a sender account.
+		type GameID: Parameter
+			+ Member
+			+ MaybeSerializeDeserialize
+			+ Debug
+			+ Default
+			+ MaybeDisplay
+			+ AtLeast32Bit
+			+ Copy
+			+ Encode
+			+ Decode;
 	}
 
 	#[pallet::pallet]
@@ -46,26 +59,27 @@ pub mod pallet {
 	#[pallet::getter(fn score)]
 	pub(super) type Score<T> = StorageValue<_, u32>;
 
+	// type Skey = Vec<u8>;
+	// type Sval = Vec<u8>;
+	// type DataEntry = (Skey,Sval);
+	// type DataRecord = Vec<DataEntry>;
+	// pub(super) type GameAccount<T:Config> = (T::GameID, T::AccountId);
 
-	type DataEntry = (Skey,Sval);
-	type DataRecord = Vec<DataEntry>;
-	pub(super) type GameAccount<T:Config> = (GameID,T::AccountId);
+	// #[pallet::storage]
+	// pub(super) type WorldDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, T::GameID, DataRecord, ValueQuery>;
+
+	// #[pallet::storage]
+	// pub(super) type WorldDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, T::GameID, DataRecord, ValueQuery>;
+
+	// #[pallet::storage]
+	// pub(super) type UserDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, GameAccount<T>, DataRecord, ValueQuery>;
+
+	// #[pallet::storage]
+	// pub(super) type UserDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, GameAccount<T>, DataRecord, ValueQuery>;
 
 	#[pallet::storage]
-	pub(super) type WorldDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, GameID, DataRecord, ValueQuery>;
-
-	#[pallet::storage]
-	pub(super) type WorldDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, GameID, DataRecord, ValueQuery>;
-
-	#[pallet::storage]
-	pub(super) type UserDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, GameAccount<T>, DataRecord, ValueQuery>;
-
-	#[pallet::storage]
-	pub(super) type UserDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, GameAccount<T>, DataRecord, ValueQuery>;
-
-	#[pallet::storage]
-	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, Vec<GameID>, ValueQuery>;
-
+	#[pallet::getter(fn authorities_map)]
+	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, Vec<T::GameID>, ValueQuery>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://substrate.dev/docs/en/knowledgebase/runtime/events
@@ -88,6 +102,12 @@ pub mod pallet {
 		NoneValue,
 		/// Errors should have helpful documentation associated with them.
 		StorageOverflow,
+
+		AlreadyRegisteredGame,
+
+		AlreadyRegisteredAuthority,
+
+		InvalidAuthority,
 	}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -161,11 +181,46 @@ pub mod pallet {
 
 			Ok(())		
 		}
-
-		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-		pub fn update_save(origin: OriginFor<T>) -> DispatchResult
+		
+		#[pallet::weight(10_000)]
+		pub fn register_game(origin: OriginFor<T>, game : T::GameID) -> DispatchResult
 		{
-			//let who = ensure_signed(origin)?;
+			let who = ensure_signed(origin)?;
+			
+			for e in <AuthoritiesMap<T>>::iter()
+			{
+				let authorized_games = &e.1;
+				frame_support::ensure!(!authorized_games.contains(&game), Error::<T>::AlreadyRegisteredGame);
+			}
+
+			<AuthoritiesMap<T>>::insert(&who, vec!(game));
+
+			Ok(())
+		}
+
+		#[pallet::weight(10_000)]
+		pub fn add_authority(origin: OriginFor<T>, game : T::GameID, new_authority : T::AccountId) -> DispatchResult
+		{			
+			let who = ensure_signed(origin)?;
+
+			// Ensure only authorities add other authorities.
+			frame_support::ensure!(<AuthoritiesMap<T>>::contains_key(&who), Error::<T>::InvalidAuthority);
+			frame_support::ensure!(<AuthoritiesMap<T>>::get(&who).contains(&game), Error::<T>::InvalidAuthority);
+
+			// Ensure no duplicate new authorities.
+			if !<AuthoritiesMap<T>>::contains_key(&new_authority)
+			{
+				<AuthoritiesMap<T>>::insert(&new_authority, vec!(game));
+			}
+			else
+			{
+				frame_support::ensure!(!<AuthoritiesMap<T>>::get(&new_authority).contains(&game), Error::<T>::InvalidAuthority);		
+				// Modify the authorities map to include a new authority
+				<AuthoritiesMap<T>>::mutate(&new_authority, |x| {x.push(game);} );
+			}
+
+
+
 			Ok(())
 		}
 	}
