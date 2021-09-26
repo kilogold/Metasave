@@ -18,6 +18,25 @@ mod benchmarking;
 pub mod pallet {
 	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
+	use sp_std::prelude::*;
+	type GameID = Vec<u8>;
+	type Skey = Vec<u8>;
+	type Sval = Vec<u8>;
+
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default)]
+	pub struct SaveData<KeyValMapType>
+	{
+		public : KeyValMapType,
+		internal : KeyValMapType,
+	}
+
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default)]
+	pub struct GameData<KeyValMapType, AccountIdType>
+	{
+		game_authorities : Vec<AccountIdType>,
+		world : SaveData<KeyValMapType>,
+		//users : StorageMap<T, Twox64Concat, T::AccountId, SaveData<T>, ValueQuery>,
+	}
 
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
@@ -41,6 +60,15 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn score)]
 	pub(super) type Score<T> = StorageValue<_, u32>;
+
+
+	//type KeyValueMap = StorageMap<T: Config, Twox64Concat, Skey, Sval, ValueQuery>;
+	type KeyValueMap = u32;
+
+	#[pallet::storage]
+	#[pallet::getter(fn save_registry)]
+	pub(super) type SaveRegistry<T: Config> = StorageMap<_, Twox64Concat, GameID, GameData<KeyValueMap, T::AccountId>, ValueQuery>;
+
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
@@ -104,7 +132,7 @@ pub mod pallet {
 					Ok(())
 				},
 			}
-		}
+		}	
 
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
 		pub fn increment_score(origin: OriginFor<T>) -> DispatchResult {
@@ -134,6 +162,13 @@ pub mod pallet {
 			Self::deposit_event(Event::LevelUp(new_score, who));
 
 			Ok(())		
+		}
+
+		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
+		pub fn update_save(origin: OriginFor<T>) -> DispatchResult
+		{
+			//let who = ensure_signed(origin)?;
+			Ok(())
 		}
 	}
 }
