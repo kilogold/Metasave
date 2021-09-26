@@ -27,7 +27,7 @@ structopt = '0.3.8'
 
 [dependencies.node-template-runtime]
 path = '../runtime'
-version = '3.0.0-monthly-2021-09+1'
+#version = '3.0.0-monthly-2021-09+1'
 
 [dependencies.frame-benchmarking]
 git = 'https://github.com/paritytech/substrate.git'
