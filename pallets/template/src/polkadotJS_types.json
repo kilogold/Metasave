@@ -1,6 +1,14 @@
 {
     "GameID": "u32",
     "Access": {
-      "_enum": ["External", "InternalExternal"]
-    }
-}
+      "_enum": [
+        "External",
+        "InternalExternal"
+      ]
+    },
+    "Permission": "(GameID, Access)",
+    "Skey": "Vec<u8>",
+    "Sval": "Vec<u8>",
+    "DataEntry": "(Skey,Sval)",
+    "DataRecord": "Vec<DataEntry>"
+  }
