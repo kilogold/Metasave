@@ -6,6 +6,12 @@
         "InternalExternal"
       ]
     },
+    "Route": {
+      "_enum": [
+        "External",
+        "Internal"
+      ]
+    },
     "Permission": "(GameID, Access)",
     "Skey": "Vec<u8>",
     "Sval": "Vec<u8>",

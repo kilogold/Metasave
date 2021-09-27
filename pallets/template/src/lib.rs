@@ -35,6 +35,12 @@ pub mod pallet {
 		}
 	}
 
+	#[derive(Encode, Decode, Debug, Clone, Copy, PartialEq)]
+	pub enum Route {
+		External,
+		Internal,
+	}
+
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -67,10 +73,7 @@ pub mod pallet {
 	// pub(super) type GameAccount<T:Config> = (T::GameID, T::AccountId);
 
 	#[pallet::storage]
-	pub(super) type WorldDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, T::GameID, DataRecord, ValueQuery>;
-
-	// #[pallet::storage]
-	// pub(super) type WorldDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, T::GameID, DataRecord, ValueQuery>;
+	pub(super) type WorldDataMap<T: Config> = StorageDoubleMap<_, Twox64Concat, T::GameID, Twox64Concat, Route, DataRecord, ValueQuery>;
 
 	// #[pallet::storage]
 	// pub(super) type UserDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, GameAccount<T>, DataRecord, ValueQuery>;
@@ -109,6 +112,8 @@ pub mod pallet {
 		AlreadyRegisteredAuthority,
 
 		InvalidAuthority,
+		
+		InvalidAccess,
 
 		NotFound
 	}
@@ -157,9 +162,8 @@ pub mod pallet {
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 
-
 		#[pallet::weight(10_000)]
-		pub fn remove_data_record(origin: OriginFor<T>, game : T::GameID, entry : DataEntry) -> DispatchResult
+		pub fn world_remove_data_record(origin: OriginFor<T>, game : T::GameID, entry : DataEntry, route : Route) -> DispatchResult
 		{
 			let who = ensure_signed(origin)?;
 
@@ -167,9 +171,14 @@ pub mod pallet {
 			
 			ensure!(who_auth.0, Error::<T>::InvalidAuthority);
 
-			ensure!(<WorldDataExternalMap<T>>::contains_key(game), Error::<T>::NotFound);
+			if route == Route::Internal
+			{
+				ensure!(who_auth.1 == Access::InternalExternal, Error::<T>::InvalidAccess)
+			}
 			
-			<WorldDataExternalMap<T>>::mutate(&game, |x| { 
+			ensure!(<WorldDataMap<T>>::contains_key(game, route), Error::<T>::NotFound);
+			
+			<WorldDataMap<T>>::mutate(game, route, |x| { 
 				match x.iter().position(|cur_entry| cur_entry.0 == entry.0) {
 					None => Err(Error::<T>::NotFound)?,	
 					Some(d) => { 
@@ -181,21 +190,25 @@ pub mod pallet {
 		}
 
 		#[pallet::weight(10_000)]
-		pub fn update_data_record(origin: OriginFor<T>, game : T::GameID, entry : DataEntry) -> DispatchResult
+		pub fn world_update_data_record(origin: OriginFor<T>, game : T::GameID, entry : DataEntry, route : Route) -> DispatchResult
 		{
 			let who = ensure_signed(origin)?;
 
 			let who_auth = is_authority::<T>(&who, game);
-			frame_support::ensure!(who_auth.0, Error::<T>::InvalidAuthority);
-
-
-			if ! <WorldDataExternalMap<T>>::contains_key(game)
+			ensure!(who_auth.0, Error::<T>::InvalidAuthority);
+			
+			if route == Route::Internal
 			{
-				<WorldDataExternalMap<T>>::insert(game, vec!(entry));
+				ensure!(who_auth.1 == Access::InternalExternal, Error::<T>::InvalidAccess)
+			}
+
+			if ! <WorldDataMap<T>>::contains_key(game, route)
+			{
+				<WorldDataMap<T>>::insert(game, route, vec!(entry));
 			}
 			else
 			{
-				<WorldDataExternalMap<T>>::mutate(&game, |x| { 
+				<WorldDataMap<T>>::mutate(game, route, |x| { 
 					match x.iter().position(|cur_entry| cur_entry.0 == entry.0) {
 						None => { x.push(entry); },
 						Some(d) => { x[d].1 = entry.1; }
