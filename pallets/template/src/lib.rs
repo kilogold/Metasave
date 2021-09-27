@@ -59,23 +59,11 @@ pub mod pallet {
 	#[pallet::generate_store(pub(super) trait Store)]
 	pub struct Pallet<T>(_);
 
-	// The pallet's runtime storage items.
-	// https://substrate.dev/docs/en/knowledgebase/runtime/storage
-	#[pallet::storage]
-	#[pallet::getter(fn something)]
-	// Learn more about declaring storage items:
-	// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
-	pub type Something<T> = StorageValue<_, u32>;
-
-	#[pallet::storage]
-	#[pallet::getter(fn score)]
-	pub(super) type Score<T> = StorageValue<_, u32>;
-
-	type Skey = Vec<u8>;
-	type Sval = Vec<u8>;
-	type DataEntry = (Skey,Sval);
-	type DataRecord = Vec<DataEntry>;
-	type Permission<T> = (<T as self::Config>::GameID, Access);
+	pub(super) type Skey = Vec<u8>;
+	pub(super) type Sval = Vec<u8>;
+	pub(super) type DataEntry = (Skey,Sval);
+	pub(super) type DataRecord = Vec<DataEntry>;
+	pub(super) type Permission<T> = (<T as self::Config>::GameID, Access);
 	// pub(super) type GameAccount<T:Config> = (T::GameID, T::AccountId);
 
 	#[pallet::storage]
@@ -121,16 +109,18 @@ pub mod pallet {
 		AlreadyRegisteredAuthority,
 
 		InvalidAuthority,
+
+		NotFound
 	}
 
 	fn is_authority<T: Config>(who : &T::AccountId, game : T::GameID) -> (bool, Access)
 	{
-		let badResult = (false, Access::default());
+		let bad_result = (false, Access::default());
 
 		// Are they listed in authorities at all?
 		let permissions = match <AuthoritiesMap<T>>::try_get(who)
 		{
-			Err(e) => {return badResult;},
+			Err(e) => {return bad_result;},
 			Ok(p) => p
 		};
 
@@ -143,7 +133,7 @@ pub mod pallet {
 			}
 		}
 
-		badResult
+		bad_result
 	}
 
 	fn game_exists<T: Config>(game : &T::GameID) -> bool
@@ -166,72 +156,56 @@ pub mod pallet {
 	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		/// An example dispatchable that takes a singles value as a parameter, writes the value to
-		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
-		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResult {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://substrate.dev/docs/en/knowledgebase/runtime/origin
+
+
+		#[pallet::weight(10_000)]
+		pub fn remove_data_record(origin: OriginFor<T>, game : T::GameID, entry : DataEntry) -> DispatchResult
+		{
 			let who = ensure_signed(origin)?;
 
-			// Update storage.
-			<Something<T>>::put(something);
+			let who_auth = is_authority::<T>(&who, game);
+			
+			ensure!(who_auth.0, Error::<T>::InvalidAuthority);
 
-			// Emit an event.
-			Self::deposit_event(Event::SomethingStored(something, who));
-			// Return a successful DispatchResultWithPostInfo
+			ensure!(<WorldDataExternalMap<T>>::contains_key(game), Error::<T>::NotFound);
+			
+			<WorldDataExternalMap<T>>::mutate(&game, |x| { 
+				match x.iter().position(|cur_entry| cur_entry.0 == entry.0) {
+					None => Err(Error::<T>::NotFound)?,	
+					Some(d) => { 
+						x.swap_remove(d); 
+						Ok(())
+					}
+				}
+			})
+		}
+
+		#[pallet::weight(10_000)]
+		pub fn update_data_record(origin: OriginFor<T>, game : T::GameID, entry : DataEntry) -> DispatchResult
+		{
+			let who = ensure_signed(origin)?;
+
+			let who_auth = is_authority::<T>(&who, game);
+			frame_support::ensure!(who_auth.0, Error::<T>::InvalidAuthority);
+
+
+			if ! <WorldDataExternalMap<T>>::contains_key(game)
+			{
+				<WorldDataExternalMap<T>>::insert(game, vec!(entry));
+			}
+			else
+			{
+				<WorldDataExternalMap<T>>::mutate(&game, |x| { 
+					match x.iter().position(|cur_entry| cur_entry.0 == entry.0) {
+						None => { x.push(entry); },
+						Some(d) => { x[d].1 = entry.1; }
+					};
+				});
+			}
+
 			Ok(())
 		}
 
-		/// An example dispatchable that may throw a custom error.
-		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-		pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
-			let _who = ensure_signed(origin)?;
-
-			// Read a value from storage.
-			match <Something<T>>::get() {
-				// Return an error if the value has not been set.
-				None => Err(Error::<T>::NoneValue)?,
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-					// Update the value in storage with the incremented result.
-					<Something<T>>::put(new);
-					Ok(())
-				},
-			}
-		}	
-
-		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn increment_score(origin: OriginFor<T>) -> DispatchResult {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://substrate.dev/docs/en/knowledgebase/runtime/origin
-			let who = ensure_signed(origin)?;
-
-			let new_score;
-
-			// Read a value from storage.
-			match <Score<T>>::get() {
-				None => {
-					// Update the value with initial score point.
-					new_score = 1;	
-				}
-
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					new_score = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-				},
-			}
-
-			// Update the value in storage with the incremented result.
-			<Score<T>>::put(new_score);
-
-			Self::deposit_event(Event::LevelUp(new_score, who));
-
-			Ok(())		
-		}
 
 		#[pallet::weight(10_000)]
 		pub fn register_game(origin: OriginFor<T>, game : T::GameID) -> DispatchResult
