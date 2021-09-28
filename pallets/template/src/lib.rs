@@ -70,16 +70,22 @@ pub mod pallet {
 	pub(super) type DataEntry = (Skey,Sval);
 	pub(super) type DataRecord = Vec<DataEntry>;
 	pub(super) type Permission<T> = (<T as self::Config>::GameID, Access);
-	// pub(super) type GameAccount<T:Config> = (T::GameID, T::AccountId);
 
 	#[pallet::storage]
 	pub(super) type WorldDataMap<T: Config> = StorageDoubleMap<_, Twox64Concat, T::GameID, Twox64Concat, Route, DataRecord, ValueQuery>;
 
-	// #[pallet::storage]
-	// pub(super) type UserDataInternalMap<T: Config> = StorageMap<_, Twox64Concat, GameAccount<T>, DataRecord, ValueQuery>;
-
-	// #[pallet::storage]
-	// pub(super) type UserDataExternalMap<T: Config> = StorageMap<_, Twox64Concat, GameAccount<T>, DataRecord, ValueQuery>;
+	#[pallet::storage]
+	#[pallet::getter(fn some_nmap)]
+	pub(super) type UserDataMap<T: Config> = StorageNMap<
+		_,
+		(
+			NMapKey<Twox64Concat, T::GameID>,
+			NMapKey<Twox64Concat, T::AccountId>,
+			NMapKey<Twox64Concat, Route>,
+		),
+		DataRecord,
+		ValueQuery,
+	>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn authorities_map)]
@@ -124,7 +130,7 @@ pub mod pallet {
 		// Are they listed in authorities at all?
 		let permissions = match <AuthoritiesMap<T>>::try_get(who)
 		{
-			Err(e) => {return bad_result;},
+			Err(_) => {return bad_result;},
 			Ok(p) => p
 		};
 
@@ -155,6 +161,22 @@ pub mod pallet {
 		false
 	}
 
+	fn is_authorized_call<T: Config> (origin: OriginFor<T>, game : T::GameID, route : Route) -> Result<T::AccountId, sp_runtime::DispatchError>
+	{
+		let who = ensure_signed(origin)?;
+
+		let who_auth = is_authority::<T>(&who, game);
+		
+		ensure!(who_auth.0, Error::<T>::InvalidAuthority);
+
+		if route == Route::Internal
+		{
+			ensure!(who_auth.1 == Access::InternalExternal, Error::<T>::InvalidAccess)
+		}
+
+		Ok(who)
+	}
+
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
 	// These functions materialize as "extrinsics", which are often compared to transactions.
 	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
@@ -164,16 +186,7 @@ pub mod pallet {
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
 		pub fn world_remove_data_record(origin: OriginFor<T>, game : T::GameID, entry : DataEntry, route : Route) -> DispatchResult
 		{
-			let who = ensure_signed(origin)?;
-
-			let who_auth = is_authority::<T>(&who, game);
-			
-			ensure!(who_auth.0, Error::<T>::InvalidAuthority);
-
-			if route == Route::Internal
-			{
-				ensure!(who_auth.1 == Access::InternalExternal, Error::<T>::InvalidAccess)
-			}
+			is_authorized_call::<T>(origin, game, route)?;
 			
 			ensure!(<WorldDataMap<T>>::contains_key(game, route), Error::<T>::NotFound);
 			
@@ -191,15 +204,7 @@ pub mod pallet {
 		#[pallet::weight(10_000)]
 		pub fn world_update_data_record(origin: OriginFor<T>, game : T::GameID, entry : DataEntry, route : Route) -> DispatchResult
 		{
-			let who = ensure_signed(origin)?;
-
-			let who_auth = is_authority::<T>(&who, game);
-			ensure!(who_auth.0, Error::<T>::InvalidAuthority);
-			
-			if route == Route::Internal
-			{
-				ensure!(who_auth.1 == Access::InternalExternal, Error::<T>::InvalidAccess)
-			}
+			is_authorized_call::<T>(origin, game, route)?;
 
 			if ! <WorldDataMap<T>>::contains_key(game, route)
 			{
@@ -218,6 +223,49 @@ pub mod pallet {
 			Ok(())
 		}
 
+		#[pallet::weight(10_000)]
+		pub fn user_remove_data_record(origin: OriginFor<T>, game : T::GameID, user : T::AccountId, route : Route, entry_key : Skey) -> DispatchResult
+		{
+			is_authorized_call::<T>(origin, game, route)?;
+			
+			let map_key = (game, user, route);
+
+			ensure!(<UserDataMap<T>>::contains_key(&map_key), Error::<T>::NotFound);
+			
+			<UserDataMap<T>>::mutate(&map_key, |x| { 
+				match x.iter().position(|cur_entry| cur_entry.0 == entry_key) {
+					None => Err(Error::<T>::NotFound)?,	
+					Some(d) => { 
+						x.swap_remove(d); 
+						Ok(())
+					}
+				}
+			})
+		}
+
+		#[pallet::weight(10_000)]
+		pub fn user_update_data_record(origin: OriginFor<T>, game : T::GameID, user : T::AccountId, route : Route, entry : DataEntry) -> DispatchResult
+		{
+			is_authorized_call::<T>(origin, game, route)?;
+
+			let map_key = (game, user, route);
+
+			if ! <UserDataMap<T>>::contains_key(&map_key)
+			{
+				<UserDataMap<T>>::insert(&map_key, vec!(entry));
+			}
+			else
+			{
+				<UserDataMap<T>>::mutate(&map_key, |x| { 
+					match x.iter().position(|cur_entry| cur_entry.0 == entry.0) {
+						None => { x.push(entry); },
+						Some(d) => { x[d].1 = entry.1; }
+					};
+				});
+			}
+
+			Ok(())
+		}
 
 		#[pallet::weight(10_000)]
 		pub fn register_game(origin: OriginFor<T>, game : T::GameID) -> DispatchResult
