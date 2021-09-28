@@ -70,22 +70,16 @@ pub mod pallet {
 	pub(super) type DataEntry = (Skey,Sval);
 	pub(super) type DataRecord = Vec<DataEntry>;
 	pub(super) type Permission<T> = (<T as self::Config>::GameID, Access);
+	pub(super) type UserID<T> = (<T as self::Config>::GameID, <T as frame_system::Config>::AccountId);
+
+
 
 	#[pallet::storage]
 	pub(super) type WorldDataMap<T: Config> = StorageDoubleMap<_, Twox64Concat, T::GameID, Twox64Concat, Route, DataRecord, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn some_nmap)]
-	pub(super) type UserDataMap<T: Config> = StorageNMap<
-		_,
-		(
-			NMapKey<Twox64Concat, T::GameID>,
-			NMapKey<Twox64Concat, T::AccountId>,
-			NMapKey<Twox64Concat, Route>,
-		),
-		DataRecord,
-		ValueQuery,
-	>;
+	pub(super) type UserDataMap<T: Config> = StorageDoubleMap<_, Twox64Concat, UserID<T>, Twox64Concat, Route, DataRecord, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn authorities_map)]
@@ -229,11 +223,11 @@ pub mod pallet {
 		{
 			is_authorized_call::<T>(origin, game, route)?;
 			
-			let map_key = (game, user, route);
+			let map_key = (game, user);
 
-			ensure!(<UserDataMap<T>>::contains_key(&map_key), Error::<T>::NotFound);
+			ensure!(<UserDataMap<T>>::contains_key(&map_key, route), Error::<T>::NotFound);
 			
-			<UserDataMap<T>>::mutate(&map_key, |x| { 
+			<UserDataMap<T>>::mutate(&map_key, route, |x| { 
 				match x.iter().position(|cur_entry| cur_entry.0 == entry_key) {
 					None => Err(Error::<T>::NotFound)?,	
 					Some(d) => { 
@@ -249,15 +243,15 @@ pub mod pallet {
 		{
 			is_authorized_call::<T>(origin, game, route)?;
 
-			let map_key = (game, user, route);
+			let map_key = (game, user);
 
-			if ! <UserDataMap<T>>::contains_key(&map_key)
+			if ! <UserDataMap<T>>::contains_key(&map_key, route)
 			{
-				<UserDataMap<T>>::insert(&map_key, vec!(entry));
+				<UserDataMap<T>>::insert(&map_key, route, vec!(entry));
 			}
 			else
 			{
-				<UserDataMap<T>>::mutate(&map_key, |x| { 
+				<UserDataMap<T>>::mutate(&map_key, route, |x| { 
 					match x.iter().position(|cur_entry| cur_entry.0 == entry.0) {
 						None => { x.push(entry); },
 						Some(d) => { x[d].1 = entry.1; }
