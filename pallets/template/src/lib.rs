@@ -37,8 +37,8 @@ pub mod pallet {
 
 	#[derive(Encode, Decode, Debug, Clone, Copy, PartialEq)]
 	pub enum Route {
-		External,
-		Internal,
+		External = 0,
+		Internal = 1,
 	}
 
 	/// Configure the pallet by specifying the parameters and types on which it depends.
@@ -72,17 +72,16 @@ pub mod pallet {
 	pub(super) type Permission<T> = (<T as self::Config>::GameID, Access);
 	pub(super) type UserID<T> = (<T as self::Config>::GameID, <T as frame_system::Config>::AccountId);
 
-
-
 	#[pallet::storage]
+	#[pallet::getter(fn world_data_map)]
 	pub(super) type WorldDataMap<T: Config> = StorageDoubleMap<_, Twox64Concat, T::GameID, Twox64Concat, Route, DataRecord, ValueQuery>;
 
 	#[pallet::storage]
-	#[pallet::getter(fn some_nmap)]
+	// #[pallet::getter(fn user_data_map)]
 	pub(super) type UserDataMap<T: Config> = StorageDoubleMap<_, Twox64Concat, UserID<T>, Twox64Concat, Route, DataRecord, ValueQuery>;
 
 	#[pallet::storage]
-	#[pallet::getter(fn authorities_map)]
+	// #[pallet::getter(fn authorities_map)]
 	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, Vec<Permission<T>>, ValueQuery>;
 
 	// Pallets use events to inform users when important changes are made.
@@ -95,7 +94,10 @@ pub mod pallet {
 		SomethingStored(u32, T::AccountId),
 
 		// [current level, who leveled up]
-		LevelUp(u32, T::AccountId)
+		LevelUp(u32, T::AccountId),
+
+		// [Game world, updated data]
+		WorldDataUpdate(T::GameID, DataEntry)
 	}
 
 	// Errors inform users that something went wrong.
@@ -115,6 +117,38 @@ pub mod pallet {
 		InvalidAccess,
 
 		NotFound
+	}
+
+	#[pallet::genesis_config]
+	pub struct GenesisConfig<T: Config> {
+		pub default_game_authority: T::AccountId,
+		pub default_game_id: T::GameID,
+	}
+
+	#[cfg(feature = "std")]
+	impl<T: Config> Default for GenesisConfig<T> {
+		fn default() -> Self {
+			Self { 
+				default_game_authority: Default::default(),
+				default_game_id: Default::default()
+			}
+		}
+	}
+
+	#[pallet::genesis_build]
+	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+		fn build(&self) {
+
+			<AuthoritiesMap<T>>::insert(&self.default_game_authority, 
+				vec!((self.default_game_id, Access::InternalExternal)));
+
+			let entry : DataEntry= (
+				String::into_bytes(String::from("Time")),
+				String::into_bytes(String::from("12")),
+			);
+
+			<WorldDataMap<T>>::insert(&self.default_game_id, Route::External, vec!(&entry));
+		}
 	}
 
 	fn is_authority<T: Config>(who : &T::AccountId, game : T::GameID) -> (bool, Access)
@@ -202,18 +236,27 @@ pub mod pallet {
 
 			if ! <WorldDataMap<T>>::contains_key(game, route)
 			{
-				<WorldDataMap<T>>::insert(game, route, vec!(entry));
+				<WorldDataMap<T>>::insert(game, route, vec!(&entry));
 			}
 			else
 			{
-				<WorldDataMap<T>>::mutate(game, route, |x| { 
-					match x.iter().position(|cur_entry| cur_entry.0 == entry.0) {
-						None => { x.push(entry); },
-						Some(d) => { x[d].1 = entry.1; }
+				<WorldDataMap<T>>::mutate(game, route, |record| {
+
+					match record.iter().position(|cur_entry| cur_entry.0 == (&entry).0) {
+						
+						// Generate a new entry.
+						None => { record.push(entry.clone()); },
+						
+						// Assign new value to existing entry.
+						Some(index) => { record[index].1 = (&entry).1.clone(); }
 					};
+
 				});
 			}
 
+			// Emit an event.
+			Self::deposit_event(Event::WorldDataUpdate(game, entry));
+			
 			Ok(())
 		}
 
