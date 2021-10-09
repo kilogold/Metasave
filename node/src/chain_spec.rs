@@ -1,5 +1,5 @@
 use node_template_runtime::{
-	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig,
+	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig, TemplateModuleConfig,
 	SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
@@ -146,9 +146,14 @@ fn testnet_genesis(
 		grandpa: GrandpaConfig {
 			authorities: initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect(),
 		},
+		template_module: TemplateModuleConfig {
+			default_game_authority : root_key.clone(),
+			default_game_id : 0
+		},		
 		sudo: SudoConfig {
 			// Assign network admin rights.
-			key: root_key,
+			key: root_key 
 		},
+
 	}
 }
