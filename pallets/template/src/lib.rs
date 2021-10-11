@@ -117,21 +117,29 @@ pub mod pallet {
 		
 		InvalidAccess,
 
-		NotFound
+		NotFound,
+
+		BadSize,
+
+		Fake
 	}
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		pub default_game_authority: T::AccountId,
-		pub default_game_id: T::GameID,
+		pub fps_game_authority: T::AccountId,
+		pub fps_game_id: T::GameID,
+		pub platformer_game_authority: T::AccountId,
+		pub platformer_game_id: T::GameID,
 	}
 
 	#[cfg(feature = "std")]
 	impl<T: Config> Default for GenesisConfig<T> {
 		fn default() -> Self {
 			Self { 
-				default_game_authority: Default::default(),
-				default_game_id: Default::default()
+				fps_game_authority: Default::default(),
+				fps_game_id: Default::default(),
+				platformer_game_authority: Default::default(),
+				platformer_game_id: Default::default()
 			}
 		}
 	}
@@ -140,15 +148,32 @@ pub mod pallet {
 	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
 		fn build(&self) {
 
-			<AuthoritiesMap<T>>::insert(&self.default_game_authority, 
-				vec!((self.default_game_id, Access::InternalExternal)));
+			// FPS
+			<AuthoritiesMap<T>>::insert(&self.fps_game_authority, 
+				vec!((self.fps_game_id, Access::InternalExternal)));
 
 			let entry : DataEntry= (
 				String::into_bytes(String::from("Time")),
-				String::into_bytes(String::from("12")),
+				1i32.to_le_bytes().to_vec(),
 			);
 
-			<WorldDataMap<T>>::insert(&self.default_game_id, Route::External, vec!(&entry));
+			<WorldDataMap<T>>::insert(&self.fps_game_id, Route::External, vec!(&entry));
+			
+
+			// PLATFORMER
+			<AuthoritiesMap<T>>::insert(&self.platformer_game_authority, 
+				vec!((self.platformer_game_id, Access::InternalExternal)));
+
+			let entry1 : DataEntry= (
+				String::into_bytes(String::from("Kills")),
+				0u32.to_le_bytes().to_vec(),
+			);
+			let entry2 : DataEntry= (
+				String::into_bytes(String::from("Deaths")),
+				0u32.to_le_bytes().to_vec(),
+			);
+
+			<WorldDataMap<T>>::insert(&self.platformer_game_id, Route::External, vec!(&entry1,&entry2));
 		}
 	}
 
@@ -257,6 +282,60 @@ pub mod pallet {
 
 			// Emit an event.
 			Self::deposit_event(Event::WorldDataUpdate(game, entry));
+			
+			Ok(())
+		}
+
+		#[pallet::weight(10_000)]
+		pub fn world_mod_data_record(origin: OriginFor<T>, game : T::GameID, new_entry : DataEntry, route : Route, ) -> DispatchResult
+		{
+			is_authorized_call::<T>(origin, game, route)?;
+
+			ensure!(<WorldDataMap<T>>::contains_key(game, route), Error::<T>::NotFound);
+			
+			<WorldDataMap<T>>::mutate(game, route, |record :&mut DataRecord| {
+
+				if false //HACK. IDK why I need this. Compiler compaints.
+				{
+					return Err(Error::<T>::Fake);
+				}
+				
+				let index : usize = record.iter().position(|cur_entry : &DataEntry| cur_entry.0 == (&new_entry).0).ok_or(Error::<T>::NotFound)?;
+				
+				let exisiting_entry = &mut record[index];
+
+				//Ensure same length
+				const SUPPORTED_BYTE_LENGTH : usize = 4;
+				ensure!(exisiting_entry.1.len() == SUPPORTED_BYTE_LENGTH, Error::<T>::BadSize);
+				ensure!(new_entry.1.len() == SUPPORTED_BYTE_LENGTH, Error::<T>::BadSize);
+				
+				// Interpret existing numeric value.
+				let existing_numeric : i32;
+				{
+					let mut vec_data : [u8; SUPPORTED_BYTE_LENGTH] = Default::default();
+					vec_data.copy_from_slice(&exisiting_entry.1[0..SUPPORTED_BYTE_LENGTH]);
+					existing_numeric = i32::from_le_bytes(vec_data);
+				}
+
+				// Interpret incoming numberic value.
+				let incoming_numeric : i32;
+				{
+					let mut vec_data : [u8; SUPPORTED_BYTE_LENGTH] = Default::default();
+					vec_data.copy_from_slice(&new_entry.1[0..SUPPORTED_BYTE_LENGTH]);
+					incoming_numeric = i32::from_le_bytes(vec_data);
+				}				
+
+				// Increment|Decrement value.
+				let result_numeric = existing_numeric + incoming_numeric;
+				let result_numeric = result_numeric.to_le_bytes();
+
+				exisiting_entry.1 = result_numeric.to_vec(); 
+
+				Ok(())
+			})?;
+
+			// // Emit an event.
+			// Self::deposit_event(Event::WorldDataUpdate(game, new_entry));
 			
 			Ok(())
 		}
