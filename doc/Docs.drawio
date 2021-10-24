@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-10-24T21:11:06.266Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36" etag="Ti-ZhIXNWM_Zx3fwU1eB" version="14.9.9" type="github" pages="3">
+<mxfile host="app.diagrams.net" modified="2021-10-24T21:26:36.928Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36" etag="Vso930uGFeNXB4aQ6JTT" version="14.9.9" type="github" pages="3">
   <diagram id="42Ei3U5lBQQJYCCdeaAZ" name="Concrete Example">
     <mxGraphModel dx="2222" dy="766" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -13,15 +13,6 @@
         <mxCell id="eoG6C2mPOc9z2Y3OGJGd-18" value="" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;spacingTop=18;spacingLeft=0;align=left;" vertex="1" parent="1">
           <mxGeometry x="380" y="990" width="164.36" height="140" as="geometry" />
         </mxCell>
-        <mxCell id="eoG6C2mPOc9z2Y3OGJGd-39" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=5;entryX=0.472;entryY=0.005;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="QmTwxcSAXKt4TzASz7lI-1" target="eoG6C2mPOc9z2Y3OGJGd-36">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="571" y="430" />
-              <mxPoint x="571" y="815" />
-              <mxPoint x="773" y="815" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
         <mxCell id="QmTwxcSAXKt4TzASz7lI-1" value="Monster Hunter" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="204.36" y="400" width="320" height="60" as="geometry" />
         </mxCell>
@@ -32,7 +23,7 @@
           <mxGeometry x="264.36" y="470" width="40" height="20" as="geometry" />
         </mxCell>
         <mxCell id="eoG6C2mPOc9z2Y3OGJGd-5" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://pbs.twimg.com/media/EcQMW22XYAYqeDo.jpg;" vertex="1" parent="1">
-          <mxGeometry x="-595" y="57" width="230" height="230" as="geometry" />
+          <mxGeometry x="555" y="7" width="230" height="230" as="geometry" />
         </mxCell>
         <mxCell id="eoG6C2mPOc9z2Y3OGJGd-6" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://www.monsterhunter.com/wp-content/uploads/2021/02/SP_MHWI.jpg;" vertex="1" parent="1">
           <mxGeometry x="203.3" y="100" width="322.12" height="280" as="geometry" />
@@ -40,6 +31,11 @@
         <mxCell id="eoG6C2mPOc9z2Y3OGJGd-40" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=5;" edge="1" parent="1" source="eoG6C2mPOc9z2Y3OGJGd-7">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="-447" y="840" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eoG6C2mPOc9z2Y3OGJGd-56" value="&lt;font style=&quot;font-size: 17px&quot;&gt;Dragons defeated are included in &lt;br&gt;kill count for community challenge&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="eoG6C2mPOc9z2Y3OGJGd-40">
+          <mxGeometry x="-0.4194" y="21" relative="1" as="geometry">
+            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="eoG6C2mPOc9z2Y3OGJGd-7" value="- Elder Dragons defeated" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
@@ -96,8 +92,27 @@
         <mxCell id="eoG6C2mPOc9z2Y3OGJGd-33" value="Palico Outfit" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://227263-694567-raikfcquaxqncofqfm.stackpathdns.com/wp-content/uploads/2020/12/Among-Us-Red-Crewmate.png;" vertex="1" parent="1">
           <mxGeometry x="655" y="423" width="69" height="86.25" as="geometry" />
         </mxCell>
-        <mxCell id="eoG6C2mPOc9z2Y3OGJGd-35" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=5;" edge="1" parent="1" source="eoG6C2mPOc9z2Y3OGJGd-34" target="eoG6C2mPOc9z2Y3OGJGd-33">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="eoG6C2mPOc9z2Y3OGJGd-35" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=5;" edge="1" parent="1" source="eoG6C2mPOc9z2Y3OGJGd-34">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="732" y="453" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="833" y="284" />
+              <mxPoint x="833" y="453" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eoG6C2mPOc9z2Y3OGJGd-54" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=5;" edge="1" parent="1" source="eoG6C2mPOc9z2Y3OGJGd-34" target="eoG6C2mPOc9z2Y3OGJGd-11">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="593" y="284" />
+              <mxPoint x="593" y="515" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eoG6C2mPOc9z2Y3OGJGd-55" value="Limited Time NFT &lt;br style=&quot;font-size: 17px;&quot;&gt;offering" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=17;" vertex="1" connectable="0" parent="eoG6C2mPOc9z2Y3OGJGd-54">
+          <mxGeometry x="-0.1875" y="45" relative="1" as="geometry">
+            <mxPoint x="-30" y="-1" as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="eoG6C2mPOc9z2Y3OGJGd-34" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://www.nintendo.com//content/dam/noa/en_US/games/switch/a/among-us-switch/among-us-switch-hero.jpg;" vertex="1" parent="1">
           <mxGeometry x="916" y="193" width="323" height="182" as="geometry" />
@@ -117,11 +132,25 @@
             </Array>
           </mxGeometry>
         </mxCell>
+        <mxCell id="eoG6C2mPOc9z2Y3OGJGd-57" value="&lt;font style=&quot;font-size: 17px&quot;&gt;Community challenge succeeds, &lt;br&gt;and all R6 players are rewarded&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="eoG6C2mPOc9z2Y3OGJGd-42">
+          <mxGeometry x="-0.0077" y="33" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="eoG6C2mPOc9z2Y3OGJGd-48" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://www.windowscentral.com/sites/wpcentral.com/files/styles/large/public/field/image/2019/07/monster-hunter-world-iceborne-july-201911.jpg?itok=b5KF6wGK;" vertex="1" parent="1">
           <mxGeometry x="-349.00117647058823" y="71.99941176470585" width="520" height="293" as="geometry" />
         </mxCell>
         <mxCell id="eoG6C2mPOc9z2Y3OGJGd-50" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://steamuserimages-a.akamaihd.net/ugc/777354267361289655/0A0BFCA03DE470DC4184B5139A0FD4F916946625/?imw=5000&amp;imh=5000&amp;ima=fit&amp;impolicy=Letterbox&amp;imcolor=%23000000&amp;letterbox=false;" vertex="1" parent="1">
           <mxGeometry x="-100" y="1150.6" width="625.42" height="352.4" as="geometry" />
+        </mxCell>
+        <mxCell id="eoG6C2mPOc9z2Y3OGJGd-39" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=5;entryX=0.472;entryY=0.005;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="QmTwxcSAXKt4TzASz7lI-1" target="eoG6C2mPOc9z2Y3OGJGd-36">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="571" y="430" />
+              <mxPoint x="571" y="815" />
+              <mxPoint x="773" y="815" />
+            </Array>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
