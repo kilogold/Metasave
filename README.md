@@ -6,7 +6,6 @@ Metasave is a data storage protocol for game worlds. The main goal of Metasave i
 * Monster Hunter World
 * Rainbow Six Siege
 
-
-![Docs-Concrete Example](https://user-images.githubusercontent.com/1028926/138626217-624aa13b-bda7-4a42-96e6-d326301dc6b6.png)
+![image](https://user-images.githubusercontent.com/1028926/138626583-67dbe1a2-6991-43bc-bfd9-f45712ea6b8e.png)
 
 ## Architecture
