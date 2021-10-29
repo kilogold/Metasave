@@ -1,6 +1,8 @@
 # Metasave
 This project was developed for the Encode Polkadot Hackathon. 
 ## Video Demo
+[![image](https://user-images.githubusercontent.com/1028926/139475111-90bc8c40-ef4a-4c10-a520-7ff8d3468668.png)](https://studio.youtube.com/video/oZd8Vu2ZqiQ/edit)
+
 The following are the resources illustrated in the video:
 * [Platformer Game](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_Platformer)
 * [FPS Game](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_FPS)
