@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-11-01T16:05:49.385Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" etag="GgxdG_GvipCfZp9dXMU4" version="15.5.9" type="github" pages="3">
+<mxfile host="app.diagrams.net" modified="2021-11-01T22:32:45.376Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" etag="XdTx1St3Xs8OwU3fFhJc" version="15.5.9" type="github" pages="3">
   <diagram id="42Ei3U5lBQQJYCCdeaAZ" name="Concrete Example">
     <mxGraphModel dx="2222" dy="758" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -748,7 +748,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="lCvxiJRqsuf5V7S10_uO" name="IoT example">
-    <mxGraphModel dx="2523" dy="892" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="3220" dy="1263" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-0" />
         <mxCell id="NBQ36T0KkVaVccAz6S6A-1" parent="NBQ36T0KkVaVccAz6S6A-0" />
@@ -758,17 +758,14 @@
         <mxCell id="NBQ36T0KkVaVccAz6S6A-13" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://pbs.twimg.com/media/EWiZoREXQAMINzP.jpg;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
           <mxGeometry x="518" y="135" width="520" height="293" as="geometry" />
         </mxCell>
-        <mxCell id="NBQ36T0KkVaVccAz6S6A-15" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=http://vgsmproject.com/wp-content/uploads/2020/04/ff7r_potions_and_music.jpg;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
-          <mxGeometry x="496" y="434.5" width="520" height="293" as="geometry" />
-        </mxCell>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-16" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://jegged.com/img/Games/Final-Fantasy-VII/Walkthrough/FFVII-00144-Wall-Market-Inn-Buy-Drink.png;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
-          <mxGeometry x="59" y="430" width="432.62" height="302" as="geometry" />
+          <mxGeometry x="118" y="443" width="432.62" height="302" as="geometry" />
         </mxCell>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-17" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://live.staticflickr.com/8269/8747532358_3dc78a77b0_c.jpg;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
-          <mxGeometry x="222.66000000000003" y="1350" width="414.67" height="311" as="geometry" />
+          <mxGeometry x="825" y="1269" width="414.67" height="311" as="geometry" />
         </mxCell>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-18" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://i.pinimg.com/564x/fc/2e/10/fc2e102ac567b17add556f37757d2ec4--space-time-fantasy-weapons.jpg;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
-          <mxGeometry x="730" y="1354" width="243.83" height="307" as="geometry" />
+          <mxGeometry y="1230" width="243.83" height="307" as="geometry" />
         </mxCell>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="NBQ36T0KkVaVccAz6S6A-1" source="NBQ36T0KkVaVccAz6S6A-20" target="NBQ36T0KkVaVccAz6S6A-21">
           <mxGeometry relative="1" as="geometry" />
@@ -779,7 +776,7 @@
         <mxCell id="NBQ36T0KkVaVccAz6S6A-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="NBQ36T0KkVaVccAz6S6A-1" source="NBQ36T0KkVaVccAz6S6A-21" target="NBQ36T0KkVaVccAz6S6A-22">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="NBQ36T0KkVaVccAz6S6A-21" value="Visit Vending Machine" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
+        <mxCell id="NBQ36T0KkVaVccAz6S6A-21" value="Visit Real-Life Vending Machine" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
           <mxGeometry x="380" y="953" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="NBQ36T0KkVaVccAz6S6A-1" source="NBQ36T0KkVaVccAz6S6A-22" target="NBQ36T0KkVaVccAz6S6A-23">
@@ -839,7 +836,8 @@
         <mxCell id="NBQ36T0KkVaVccAz6S6A-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="NBQ36T0KkVaVccAz6S6A-1" source="NBQ36T0KkVaVccAz6S6A-29" target="NBQ36T0KkVaVccAz6S6A-36">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="430" y="1292" />
+              <mxPoint x="357" y="1159" />
+              <mxPoint x="357" y="1159" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -853,7 +851,13 @@
           <mxGeometry x="195" y="782" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-36" value="Enjoy" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
-          <mxGeometry x="571" y="1262" width="100" height="60" as="geometry" />
+          <mxGeometry x="203" y="1129" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NBQ36T0KkVaVccAz6S6A-42" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://i0.wp.com/japandaman.com/wp-content/uploads/2011/12/SAM_21771.jpg?fit=3840%2C2160&amp;ssl=1;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
+          <mxGeometry x="276" y="1276" width="520" height="293" as="geometry" />
+        </mxCell>
+        <mxCell id="NBQ36T0KkVaVccAz6S6A-43" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://i.ytimg.com/vi/A8lya_MXg7s/maxresdefault.jpg;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
+          <mxGeometry x="606.9966666666669" y="456.0033333333335" width="520" height="293" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
