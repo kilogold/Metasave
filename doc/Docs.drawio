@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-11-01T16:05:32.433Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" etag="7Ytb4gGqcMlTJU-eUuAn" version="15.5.9" type="github" pages="3">
+<mxfile host="app.diagrams.net" modified="2021-11-01T16:05:49.385Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" etag="GgxdG_GvipCfZp9dXMU4" version="15.5.9" type="github" pages="3">
   <diagram id="42Ei3U5lBQQJYCCdeaAZ" name="Concrete Example">
     <mxGraphModel dx="2222" dy="758" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -765,10 +765,10 @@
           <mxGeometry x="59" y="430" width="432.62" height="302" as="geometry" />
         </mxCell>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-17" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://live.staticflickr.com/8269/8747532358_3dc78a77b0_c.jpg;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
-          <mxGeometry x="915" y="1357" width="414.67" height="311" as="geometry" />
+          <mxGeometry x="222.66000000000003" y="1350" width="414.67" height="311" as="geometry" />
         </mxCell>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-18" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://i.pinimg.com/564x/fc/2e/10/fc2e102ac567b17add556f37757d2ec4--space-time-fantasy-weapons.jpg;" vertex="1" parent="NBQ36T0KkVaVccAz6S6A-1">
-          <mxGeometry x="395" y="1359" width="243.83" height="307" as="geometry" />
+          <mxGeometry x="730" y="1354" width="243.83" height="307" as="geometry" />
         </mxCell>
         <mxCell id="NBQ36T0KkVaVccAz6S6A-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="NBQ36T0KkVaVccAz6S6A-1" source="NBQ36T0KkVaVccAz6S6A-20" target="NBQ36T0KkVaVccAz6S6A-21">
           <mxGeometry relative="1" as="geometry" />
