@@ -38,3 +38,16 @@ After this sequence of events, **AccountA** & **AccountB** may update the World1
 Neither developer was required to implement custom logic for interoperability. Everyone can publicly see the data and freely subscribe to changes from their own world and anyone else's.  
 
 Note **AccountC** has no authority to modify World1 data, thus World1 is protected. **AccountA/AccountB** (dev team) may grant **External** access to **AccountC** in order to write save data on World1's game, while still protecting World1's **Internal** data from anyone outside the dev team. 
+
+
+## WIP Features
+### Individual On-Chain User Data
+![image](https://user-images.githubusercontent.com/1028926/139700828-55fd4e44-3eb1-4b1c-af8d-83558fa4cc32.png)  
+User data is leveraged in a similar manner as world data, except it pertains to each individual user. This opens up novel use cases, such as anti-cheat & verifiable game progress. Other extraordinary implementations may include IoT.
+
+#### Vending Machine IoT Example
+In the diagram below, we explore how to bring [FinalFantasy VII Remake](https://www.playstation.com/en-us/games/final-fantasy-vii-remake/)'s vending machines into real life. For the purposes of this example, we are using a 
+![image](https://user-images.githubusercontent.com/1028926/139705304-0e95736c-9843-4a55-ac29-c593a15854f2.png)
+**Why not just tokenize GIL (like an ERC-20)?**  
+That is a valid strategy, and one that needs to be carefully considered...  
+Tokenization often leads to relinquishing control of asset utility, which can adversely affect game design & balance. By restricting the data to a player's save file, the game designer is able to retain the quality control of their game's experience (the token asset doesn't run rampant through DeFi protocols). Furthermore, tokens alone are not enough to provide bespoke verification. In the example above, it is not enough to be able to afford the item. As a player, you must also progress far enough into the game in order to qualify. The only way to accomplish this in a tokenized world is to mint yet another token (like an achievement) to track the progress. Ultimately, we end up juggling many tokens for a single game, which may be costly to transfer to other wallets/accounts, and which also present many vectors to exploit games (or even impose an unintended pay to win model via trading achievement tokens).
