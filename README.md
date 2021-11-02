@@ -51,3 +51,16 @@ In the diagram below, we explore how to bring [Final Fantasy VII Remake](https:/
 **Why not just tokenize GIL (like an ERC-20)?**  
 While tokenization is a valid (and sometimes ideal) strategy, it needs to be carefully considered...  
 Tokenization often leads to relinquishing control of asset utility, which can adversely affect game design & balance. By restricting the data to a player's save file, the game designer is able to retain the quality control of their game's experience (the token asset doesn't run rampant through DeFi protocols). Furthermore, tokens alone are not enough to provide bespoke verification. In the example above, it is not enough to be able to afford the item. As a player, you must also progress far enough into the game in order to qualify by defeating Bahamut. The only way to accomplish this in a tokenized world is to mint yet another token (like an achievement) to track the progress. Ultimately, we end up juggling many tokens for a single game, which may be costly to transfer to other wallets/accounts, and/or also introduce many game-explot vectors (or even facilitate an unintended pay-2-win model via trading achievement tokens).
+
+# Tech Specs
+## Dependencies
+*  Extended version of the [Substrate .Net API](https://github.com/ajuna-network/SubstrateNetApi), already included within the game demos listed above.
+*  Unity3D 2019.4
+
+## Deployment
+*  Follow typical [node template](https://github.com/substrate-developer-hub/substrate-node-template) deployment (pallet is included and installed).
+*  Clone game demos linked above.
+*  Open game demos with Unity and play.
+
+## Notes
+*  Metasave is preconfigured to have default Alice & Bob accounts registered with their respective games (see video for Alice & Bob setup). You may find the preconfiguration in the pallet's [lib.rs](https://github.com/kilogold/HackWeek-Sept2021/blob/daba356a66f1b5115c699543270c48332e3b2db4/pallets/template/src/lib.rs#L148).
