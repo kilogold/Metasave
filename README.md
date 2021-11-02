@@ -1,7 +1,8 @@
 # Metasave
 This project was developed for the [Encode Polkadot Hackathon](https://www.encode.club/polkadot-club-hackathon). 
 ## Video Demo
-[![image](https://user-images.githubusercontent.com/1028926/139475111-90bc8c40-ef4a-4c10-a520-7ff8d3468668.png)](https://studio.youtube.com/video/oZd8Vu2ZqiQ/edit)
+(click to play)
+[![image](https://user-images.githubusercontent.com/1028926/139475111-90bc8c40-ef4a-4c10-a520-7ff8d3468668.png)](https://www.youtube.com/watch?v=oZd8Vu2ZqiQ)
 
 The following are the resources illustrated in the video:
 * [Platformer Game](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_Platformer)
