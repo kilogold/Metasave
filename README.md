@@ -47,7 +47,7 @@ Note **AccountC** has no authority to modify World1 data, thus World1 is protect
 User data is leveraged in a similar manner as world data, except it pertains to each individual user. This opens up novel use cases, such as anti-cheat & verifiable game progress. Other extraordinary implementations may include IoT.
 
 #### Vending Machine IoT Example
-In the diagram below, we explore how to bring [Final Fantasy VII Remake](https://www.playstation.com/en-us/games/final-fantasy-vii-remake/)'s vending machines into real life. For the purposes of this example, we are using a 
+In the diagram below, we explore how to bring [Final Fantasy VII Remake](https://www.playstation.com/en-us/games/final-fantasy-vii-remake/)'s vending machines into real life. 
 ![image](https://user-images.githubusercontent.com/1028926/139705304-0e95736c-9843-4a55-ac29-c593a15854f2.png)
 **Why not just tokenize GIL (like an ERC-20)?**  
 While tokenization is a valid (and sometimes ideal) strategy, it needs to be carefully considered...  
