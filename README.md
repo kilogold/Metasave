@@ -43,7 +43,7 @@ Note **AccountC** has no authority to modify World1 data, thus World1 is protect
 
 ## WIP Features
 ### Individual On-Chain User Data
-![image](https://user-images.githubusercontent.com/1028926/139700828-55fd4e44-3eb1-4b1c-af8d-83558fa4cc32.png)  
+![image](https://user-images.githubusercontent.com/1028926/141663167-cb933bdc-4e5d-4f0d-97e0-d3c83cd99146.png)  
 User data is leveraged in a similar manner as world data, except it pertains to each individual user. This opens up novel use cases, such as anti-cheat & verifiable game progress. Other extraordinary implementations may include IoT.
 
 #### Vending Machine IoT Example
