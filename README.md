@@ -1,6 +1,10 @@
 # Metasave
-This project was developed for the [Encode Polkadot Hackathon](https://www.encode.club/polkadot-club-hackathon). 
-## Video Demo
+
+## Video Intro 
+(click to play)
+[![image](https://user-images.githubusercontent.com/1028926/141672480-4ab24560-a71d-4fe2-bf7f-845a9053e0af.png)](https://www.youtube.com/watch?v=rfkjQQ0yccw)
+
+## Video Tutorial
 (click to play)
 [![image](https://user-images.githubusercontent.com/1028926/139475111-90bc8c40-ef4a-4c10-a520-7ff8d3468668.png)](https://www.youtube.com/watch?v=oZd8Vu2ZqiQ)
 
