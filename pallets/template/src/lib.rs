@@ -23,7 +23,7 @@ pub mod pallet {
 	use frame_system::pallet_prelude::*;
 	use sp_std::prelude::*;
 
-	#[derive(Encode, Decode, Debug, Clone, PartialEq)]
+	#[derive(Encode, Decode, Debug, Clone, TypeInfo, PartialEq)]
 	pub enum Access {
 		External,
 		InternalExternal,
@@ -35,7 +35,7 @@ pub mod pallet {
 		}
 	}
 
-	#[derive(Encode, Decode, Debug, Clone, Copy, PartialEq)]
+	#[derive(Encode, Decode, Debug, Clone, Copy, TypeInfo, PartialEq)]
 	pub enum Route {
 		External = 0,
 		Internal = 1,
