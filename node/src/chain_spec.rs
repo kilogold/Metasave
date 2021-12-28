@@ -1,5 +1,5 @@
 use node_template_runtime::{
-	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig, MetasaveConfig, TemplateModuleConfig,
+	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig, MetasaveConfig,
 	SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
