@@ -1,5 +1,5 @@
 use node_template_runtime::{
-	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig, TemplateModuleConfig,
+	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig, MetasaveConfig, TemplateModuleConfig,
 	SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
@@ -145,7 +145,7 @@ fn testnet_genesis(
 		grandpa: GrandpaConfig {
 			authorities: initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect(),
 		},
-		template_module: TemplateModuleConfig {
+		metasave: MetasaveConfig {
 			fps_game_authority : get_account_id_from_seed::<sr25519::Public>("Alice"),
 			fps_game_id : 0,
 			platformer_game_authority : get_account_id_from_seed::<sr25519::Public>("Bob"),

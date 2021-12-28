@@ -1,6 +1,7 @@
 [workspace]
 members = [
     'node',
+    'pallets/Metasave',
     'pallets/template',
     'runtime',
 ]

@@ -17,6 +17,11 @@ default-features = false
 path = '../pallets/template'
 version = '4.0.0-dev'
 
+[dependencies.pallet-metasave]
+default-features = false
+path = '../pallets/Metasave'
+version = '4.0.0-dev'
+
 [build-dependencies.substrate-wasm-builder]
 git = 'https://github.com/paritytech/substrate.git'
 tag = 'monthly-2021-12'
@@ -205,6 +210,7 @@ runtime-benchmarks = [
     'hex-literal',
     'pallet-balances/runtime-benchmarks',
     'pallet-template/runtime-benchmarks',
+    'pallet-metasave/runtime-benchmarks',
     'pallet-timestamp/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
 ]
@@ -221,6 +227,7 @@ std = [
     'pallet-grandpa/std',
     'pallet-randomness-collective-flip/std',
     'pallet-sudo/std',
+    'pallet-metasave/std',
     'pallet-template/std',
     'pallet-timestamp/std',
     'pallet-transaction-payment-rpc-runtime-api/std',
