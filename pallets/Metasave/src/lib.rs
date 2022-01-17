@@ -382,9 +382,22 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			frame_support::ensure!(! game_exists::<T>(&game), Error::<T>::AlreadyRegisteredGame);
-
+			
+			// For the registring user, access the permissions
 			let new_entry = (game, Access::InternalExternal);
-			<AuthoritiesMap<T>>::insert(&who, vec!(new_entry));
+			
+			// When a user first registers a game, they don't exist in the AuthoritiesMap. Add them.
+			if <AuthoritiesMap<T>>::contains_key(&who)
+			{
+				//TODO: use try_mutate.
+				<AuthoritiesMap<T>>::mutate(&who, |x| {
+					x.push(new_entry);
+				});
+			}
+			else
+			{
+				<AuthoritiesMap<T>>::insert(&who, vec!(new_entry));
+			};
 
 			Ok(())
 		}
