@@ -1,164 +1,92 @@
-# Substrate Node Template
+# Metasave
 
-A fresh [Substrate](https://substrate.io/) node, ready for hacking :rocket:
+## Video Intro 
+(click to play)
+[![image](https://user-images.githubusercontent.com/1028926/141672480-4ab24560-a71d-4fe2-bf7f-845a9053e0af.png)](https://www.youtube.com/watch?v=rfkjQQ0yccw)
 
-A standalone version of this template is available for each release of Polkadot in the [Substrate Developer Hub Parachain Template](https://github.com/substrate-developer-hub/substrate-parachain-template/) repository.
-The parachain template is generated directly at each Polkadot release branch from the [Node Template in Substrate](https://github.com/paritytech/substrate/tree/master/bin/node-template) upstream
+## Product Presentation
+(click to play)
+[![image](https://user-images.githubusercontent.com/1028926/145700359-f9560a24-8481-49a2-8d86-f44d652dae82.png)](https://www.youtube.com/watch?v=Xo_HGlWKlY0)
 
-It is usually best to use the stand-alone version to start a new project.
-All bugs, suggestions, and feature requests should be made upstream in the [Substrate](https://github.com/paritytech/substrate/tree/master/bin/node-template) repository.
+## Video Tutorial
+(click to play)
+[![image](https://user-images.githubusercontent.com/1028926/139475111-90bc8c40-ef4a-4c10-a520-7ff8d3468668.png)](https://www.youtube.com/watch?v=oZd8Vu2ZqiQ)
 
-## Getting Started
+The following are the resources illustrated in the video:
+* [Platformer Game](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_Platformer)
+* [FPS Game](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_FPS)
 
-Depending on your operating system and Rust version, there might be additional packages required to compile this template.
-Check the [Install](https://docs.substrate.io/install/) instructions for your platform for the most common dependencies.
-Alternatively, you can use one of the [alternative installation](#alternatives-installations) options.
+## Concept
+Metasave is a data storage protocol for game worlds. It is a back-end service for game developers to manage player data in a decentralized, platform-agnostic way. The main goal of Metasave is to provide a mechanism where the consequences of one game carry over to any other game in real-time. Using permissionless read access, any game can react to events ocurring in any other game world irrespective of genre, platform, or hardware. To illustrate the concept, we will explore a hypothetical implementation of Metasave involving two popular games at the time of writing: 
+* [Monster Hunter World](http://www.monsterhunterworld.com/us/)
+* [Rainbow Six Siege](https://www.ubisoft.com/en-gb/game/rainbow-six/siege)
 
-### Build
+![image](https://user-images.githubusercontent.com/1028926/138626583-67dbe1a2-6991-43bc-bfd9-f45712ea6b8e.png)
 
-Use the following command to build the node without launching it:
+## Architecture
+### World Data Map (StorageDoubleMap)
+![image](https://user-images.githubusercontent.com/1028926/138798123-5ba5866e-e222-4d33-a4a8-facd31159213.png)  
+**DataEntry** Keys and Values can be stored as any arbitrary data by virtue of a byte vector. This allows developers to choose and optimize world data to their desired use case. We could use a simple character string as a key, or we could use any arbitrary complex object represented in binary format.
+### Authority Map (StorageMap)
+![image](https://user-images.githubusercontent.com/1028926/138798404-5e994e26-8d95-4a24-a150-d7ea4717105c.png)  
+An account is tied to a **Permission** which is evaluated with every storage update transaction. Game world data can only be modified by an authority (an account with permissions for said game). Each world data is partitioned into two categories:
+* External
+* Internal
 
-```sh
-cargo build --release
-```
+The difference between the two are purely semantic. These categories act as a means to distinguish which accounts have Write-Access to world data. Read-Access is available to everyone.
 
-### Embedded Docs
+### Route vs Access  
+The similarity between **Access** and **Route** enums is intentional. The operative difference is that **Access** designates permission, whereas **Route** indicates intent. You can think of is as:
 
-After you build the project, you can use the following command to explore its parameters and subcommands:
+> "I want to update [*internal*] data for GAME1, but I only have [*external*] access."
 
-```sh
-./target/release/node-template -h
-```
+### Example Usage
+Here's what the order of events look like to begin using Metasave:  
+![image](https://user-images.githubusercontent.com/1028926/138800337-314bd68c-d573-46a2-b71c-dfa341920ce9.png)  
+After this sequence of events, **AccountA** & **AccountB** may update the World1 calendar at any time. World2 will automatically receive this update and respond accordingly. 
+Neither developer was required to implement custom logic for interoperability. Everyone can publicly see the data and freely subscribe to changes from their own world and anyone else's.  
 
-You can generate and view the [Rust Docs](https://doc.rust-lang.org/cargo/commands/cargo-doc.html) for this template with this command:
-
-```sh
-cargo +nightly doc --open
-```
-
-### Single-Node Development Chain
-
-The following command starts a single-node development chain that doesn't persist state:
-
-```sh
-./target/release/node-template --dev
-```
-
-To purge the development chain's state, run the following command:
-
-```sh
-./target/release/node-template purge-chain --dev
-```
-
-To start the development chain with detailed logging, run the following command:
-
-```sh
-RUST_BACKTRACE=1 ./target/release/node-template -ldebug --dev
-```
-
-Development chains:
-
-- Maintain state in a `tmp` folder while the node is running.
-- Use the **Alice** and **Bob** accounts as default validator authorities.
-- Use the **Alice** account as the default `sudo` account.
-- Are preconfigured with a genesis state (`/node/src/chain_spec.rs`) that includes several prefunded development accounts.
+Note **AccountC** has no authority to modify World1 data, thus World1 is protected. **AccountA/AccountB** (dev team) may grant **External** access to **AccountC** in order to write save data on World1's game, while still protecting World1's **Internal** data from anyone outside the dev team. 
 
 
-To persist chain state between runs, specify a base path by running a command similar to the following:
+## WIP Features
+### Individual On-Chain User Data
+![image](https://user-images.githubusercontent.com/1028926/141663167-cb933bdc-4e5d-4f0d-97e0-d3c83cd99146.png)  
+User data is leveraged in a similar manner as world data, except it pertains to each individual user. This opens up novel use cases, such as anti-cheat & verifiable game progress. Other extraordinary implementations may include IoT.
 
-```sh
-// Create a folder to use as the db base path
-$ mkdir my-chain-state
+#### Vending Machine IoT Example
+In the diagram below, we explore how to bring [Final Fantasy VII Remake](https://www.playstation.com/en-us/games/final-fantasy-vii-remake/)'s vending machines into real life. 
+![image](https://user-images.githubusercontent.com/1028926/139705304-0e95736c-9843-4a55-ac29-c593a15854f2.png)
+**Why not just tokenize GIL (like an ERC-20)?**  
+While tokenization is a valid (and sometimes ideal) strategy, it needs to be carefully considered...  
+Tokenization often leads to relinquishing control of asset utility, which can adversely affect game design & balance. By restricting the data to a player's save file, the game designer is able to retain the quality control of their game's experience (the token asset doesn't run rampant through DeFi protocols). Furthermore, tokens alone are not enough to provide bespoke verification. In the example above, it is not enough to be able to afford the item. As a player, you must also progress far enough into the game in order to qualify by defeating Bahamut. The only way to accomplish this in a tokenized world is to mint yet another token (like an achievement) to track the progress. Ultimately, we end up juggling many tokens for a single game, which may be costly to transfer to other wallets/accounts, and/or also introduce many game-explot vectors (or even facilitate an unintended pay-2-win model via trading achievement tokens).
 
-// Use of that folder to store the chain state
-$ ./target/release/node-template --dev --base-path ./my-chain-state/
+# Tech Specs
+## Demo Usage
+There is a [hosted demo node](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fmetasave.westcentralus.cloudapp.azure.com%3A443#/extrinsics) for evaluation purposes. 
+The node is running in temporary dev mode, so default accounts (Alice/Bob/Charlie/Dave/Eve/Ferdie) are accessible. For a thorough walkthrough of usage, please refer to the [video tutorial](https://www.youtube.com/watch?v=oZd8Vu2ZqiQ) linked at the top of this readme.  
 
-// Check the folder structure created inside the base path after running the chain
-$ ls ./my-chain-state
-chains
-$ ls ./my-chain-state/chains/
-dev
-$ ls ./my-chain-state/chains/dev
-db keystore network
-```
+General steps are outlined as follows:
+* Visit deployment node's extrinsics page.
+* Select **templateModule** from the modules dropdown to expose extrinsics.
+* Register a game/world.
+* Add an authority (optional, since the account registering the game is an authority by default).
+* Update world data record to introduce any data to be parsed by a game client (optional, games clients/servers can do this on runtime).
 
-### Connect with Polkadot-JS Apps Front-End
+## Tech Stack
+*  Extended version of the [Substrate .Net API](https://github.com/ajuna-network/SubstrateNetApi), already included within the game templates (see Deployment below).
+*  [Unity3D 2019.4.23](https://unity3d.com/unity/whats-new/2019.4.23)
 
-After you start the node template locally, you can interact with it using the hosted version of the [Polkadot/Substrate Portal](https://polkadot.js.org/apps/#/explorer?rpc=ws://localhost:9944) front-end by connecting to the local node endpoint.
-A hosted version is also available on [IPFS (redirect) here](https://dotapps.io/) or [IPNS (direct) here](ipns://dotapps.io/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/explorer).
-You can also find the source code and instructions for hosting your own instance on the [polkadot-js/apps](https://github.com/polkadot-js/apps) repository.
+## Deployment
+*  Follow typical [node template](https://github.com/substrate-developer-hub/substrate-node-template) deployment (Metasave pallet is already included and installed).
+*  Clone game templates.
+    * [Polkadot_Platformer](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_Platformer)
+    * [Polkadot_FPS](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_FPS)
+*  Open either game demo with Unity and play.
 
-### Multi-Node Local Testnet
+The Substrate node & game templates are preconfigured for local networking. You can redirect either game template's endpoint to the hosted demo node as well. Changing endpoints requires modifications only on the game clients.
 
-If you want to see the multi-node consensus algorithm in action, see [Simulate a network](https://docs.substrate.io/tutorials/build-a-blockchain/simulate-network/).
-
-## Template Structure
-
-A Substrate project such as this consists of a number of components that are spread across a few directories.
-
-### Node
-
-A blockchain node is an application that allows users to participate in a blockchain network.
-Substrate-based blockchain nodes expose a number of capabilities:
-
-- Networking: Substrate nodes use the [`libp2p`](https://libp2p.io/) networking stack to allow the
-  nodes in the network to communicate with one another.
-- Consensus: Blockchains must have a way to come to [consensus](https://docs.substrate.io/fundamentals/consensus/) on the state of the network.
-  Substrate makes it possible to supply custom consensus engines and also ships with several consensus mechanisms that have been built on top of [Web3 Foundation research](https://research.web3.foundation/en/latest/polkadot/NPoS/index.html).
-- RPC Server: A remote procedure call (RPC) server is used to interact with Substrate nodes.
-
-There are several files in the `node` directory.
-Take special note of the following:
-
-- [`chain_spec.rs`](./node/src/chain_spec.rs): A [chain specification](https://docs.substrate.io/build/chain-spec/) is a source code file that defines a Substrate chain's initial (genesis) state.
-  Chain specifications are useful for development and testing, and critical when architecting the launch of a production chain.
-  Take note of the `development_config` and `testnet_genesis` functions,.
-  These functions are used to define the genesis state for the local development chain configuration.
-  These functions identify some [well-known accounts](https://docs.substrate.io/reference/command-line-tools/subkey/) and use them to configure the blockchain's initial state.
-- [`service.rs`](./node/src/service.rs): This file defines the node implementation.
-  Take note of the libraries that this file imports and the names of the functions it invokes.
-  In particular, there are references to consensus-related topics, such as the [block finalization and forks](https://docs.substrate.io/fundamentals/consensus/#finalization-and-forks) and other [consensus mechanisms](https://docs.substrate.io/fundamentals/consensus/#default-consensus-models) such as Aura for block authoring and GRANDPA for finality.
-
-
-
-### Runtime
-
-In Substrate, the terms "runtime" and "state transition function" are analogous.
-Both terms refer to the core logic of the blockchain that is responsible for validating blocks and executing the state changes they define.
-The Substrate project in this repository uses [FRAME](https://docs.substrate.io/learn/runtime-development/#frame) to construct a blockchain runtime.
-FRAME allows runtime developers to declare domain-specific logic in modules called "pallets".
-At the heart of FRAME is a helpful [macro language](https://docs.substrate.io/reference/frame-macros/) that makes it easy to create pallets and flexibly compose them to create blockchains that can address [a variety of needs](https://substrate.io/ecosystem/projects/).
-
-Review the [FRAME runtime implementation](./runtime/src/lib.rs) included in this template and note the following:
-
-- This file configures several pallets to include in the runtime.
-  Each pallet configuration is defined by a code block that begins with `impl $PALLET_NAME::Config for Runtime`.
-- The pallets are composed into a single runtime by way of the [`construct_runtime!`](https://paritytech.github.io/substrate/master/frame_support/macro.construct_runtime.html) macro, which is part of the [core FRAME pallet library](https://docs.substrate.io/reference/frame-pallets/#system-pallets).
-
-### Pallets
-
-The runtime in this project is constructed using many FRAME pallets that ship with [the Substrate repository](https://github.com/paritytech/substrate/tree/master/frame) and a template pallet that is [defined in the `pallets`](./pallets/template/src/lib.rs) directory.
-
-A FRAME pallet is comprised of a number of blockchain primitives, including:
-
-- Storage: FRAME defines a rich set of powerful [storage abstractions](https://docs.substrate.io/build/runtime-storage/) that makes it easy to use Substrate's efficient key-value database to manage the evolving state of a blockchain.
-- Dispatchables: FRAME pallets define special types of functions that can be invoked (dispatched) from outside of the runtime in order to update its state.
-- Events: Substrate uses [events](https://docs.substrate.io/build/events-and-errors/) to notify users of significant state changes.
-- Errors: When a dispatchable fails, it returns an error.
-
-Each pallet has its own `Config` trait which serves as a configuration interface to generically define the types and parameters it depends on.
-
-## Alternatives Installations
-
-Instead of installing dependencies and building this source directly, consider the following alternatives.
-
-### Nix
-
-Install [nix](https://nixos.org/) and
-[nix-direnv](https://github.com/nix-community/nix-direnv) for a fully plug-and-play
-experience for setting up the development environment.
-To get all the correct dependencies, activate direnv `direnv allow`.
-
-### Docker
-
-Please follow the [Substrate Docker instructions here](https://github.com/paritytech/substrate/blob/master/docker/README.md) to build the Docker container with the Substrate Node Template binary.
+## Notes
+*  If you are unable to connect to the node via Polkadot.js, you are probably getting an invalid certificate error. Please follow the [official Polkadot instructions](https://wiki.polkadot.network/docs/maintain-wss#importing-the-certificate) to resolve this.
+*  Metasave is preconfigured to have default Alice & Bob accounts registered with their respective games (see video for Alice & Bob setup). You may find the preconfiguration in the pallet's [lib.rs](https://github.com/kilogold/HackWeek-Sept2021/blob/daba356a66f1b5115c699543270c48332e3b2db4/pallets/template/src/lib.rs#L148).
+*  Metasave pallet introduces custom data types that Polkadot.js is now aware of. Paste the [provided definitions](pallets/template/src/polkadotJS_types.json) into the [developer settings](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fmetasave.westcentralus.cloudapp.azure.com%3A443#/settings/developer) page.
