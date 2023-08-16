@@ -2,7 +2,7 @@
 
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// <https://docs.substrate.io/v3/runtime/frame>
+/// <https://docs.substrate.io/reference/frame-pallets/>
 pub use pallet::*;
 
 #[cfg(test)]
@@ -16,14 +16,15 @@ mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+	use super::*;
 	use sp_runtime::traits::MaybeDisplay;
 	use sp_runtime::traits::AtLeast32Bit;	
 	use frame_support::dispatch::fmt::Debug;
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
-	use sp_std::prelude::*;
-
-	#[derive(Encode, Decode, Debug, Clone, TypeInfo, PartialEq)]
+	use frame_support::{BoundedVec, bounded_vec};
+	
+	#[derive(Encode, Decode, Debug, Clone, TypeInfo, PartialEq, MaxEncodedLen)]
 	pub enum Access {
 		External,
 		InternalExternal,
@@ -35,7 +36,7 @@ pub mod pallet {
 		}
 	}
 
-	#[derive(Encode, Decode, Debug, Clone, Copy, TypeInfo, PartialEq)]
+	#[derive(Encode, Decode, Debug, Clone, Copy, TypeInfo, PartialEq, MaxEncodedLen)]
 	pub enum Route {
 		External = 0,
 		Internal = 1,
@@ -47,7 +48,7 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
 		/// Account index (aka nonce) type.
 		type GameID: Parameter
@@ -59,15 +60,14 @@ pub mod pallet {
 			+ AtLeast32Bit
 			+ Copy
 			+ Encode
-			+ Decode;
+			+ Decode
+			+ MaxEncodedLen;
 	}
 
-
-
-	pub(super) type Skey = Vec<u8>;
-	pub(super) type Sval = Vec<u8>;
+	pub(super) type Skey = BoundedVec<u8, ConstU32<256_u32>>;
+	pub(super) type Sval = BoundedVec<u8, ConstU32<256_u32>>;
 	pub(super) type DataEntry = (Skey,Sval);
-	pub(super) type DataRecord = Vec<DataEntry>;
+	pub(super) type DataRecord = BoundedVec<DataEntry, ConstU32<256_u32>>;
 	pub(super) type Permission<T> = (<T as self::Config>::GameID, Access);
 	pub(super) type UserID<T> = (<T as self::Config>::GameID, <T as frame_system::Config>::AccountId);
 
@@ -78,7 +78,7 @@ pub mod pallet {
 	pub(super) type UserDataMap<T: Config> = StorageDoubleMap<_, Twox64Concat, UserID<T>, Twox64Concat, Route, DataRecord, ValueQuery>;
 
 	#[pallet::storage]
-	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, Vec<Permission<T>>, ValueQuery>;
+	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, BoundedVec<Permission<T>, ConstU32<256_u32>>, ValueQuery>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
@@ -115,58 +115,58 @@ pub mod pallet {
 		Fake
 	}
 
-	#[pallet::genesis_config]
-	pub struct GenesisConfig<T: Config> {
-		pub fps_game_authority: T::AccountId,
-		pub fps_game_id: T::GameID,
-		pub platformer_game_authority: T::AccountId,
-		pub platformer_game_id: T::GameID,
-	}
+	// #[pallet::genesis_config]
+	// pub struct GenesisConfig<T: Config> {
+	// 	pub fps_game_authority: T::AccountId,
+	// 	pub fps_game_id: T::GameID,
+	// 	pub platformer_game_authority: T::AccountId,
+	// 	pub platformer_game_id: T::GameID,
+	// }
 
-	#[cfg(feature = "std")]
-	impl<T: Config> Default for GenesisConfig<T> {
-		fn default() -> Self {
-			Self { 
-				fps_game_authority: Default::default(),
-				fps_game_id: Default::default(),
-				platformer_game_authority: Default::default(),
-				platformer_game_id: Default::default()
-			}
-		}
-	}
+	// #[cfg(feature = "std")]
+	// impl<T: Config> Default for GenesisConfig<T> {
+	// 	fn default() -> Self {
+	// 		Self { 
+	// 			fps_game_authority: Default::default(),
+	// 			fps_game_id: Default::default(),
+	// 			platformer_game_authority: Default::default(),
+	// 			platformer_game_id: Default::default()
+	// 		}
+	// 	}
+	// }
 
-	#[pallet::genesis_build]
-	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
-		fn build(&self) {
+	// #[pallet::genesis_build]
+	// impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
+	// 	fn build(&self) {
 
-			// FPS
-			<AuthoritiesMap<T>>::insert(&self.fps_game_authority, 
-				vec!((self.fps_game_id, Access::InternalExternal)));
+	// 		// FPS
+	// 		<AuthoritiesMap<T>>::insert(&self.fps_game_authority, 
+	// 			vec!((self.fps_game_id, Access::InternalExternal)));
 
-			let entry : DataEntry= (
-				String::into_bytes(String::from("Time")),
-				1i32.to_le_bytes().to_vec(),
-			);
+	// 		let entry : DataEntry= (
+	// 			String::into_bytes(String::from("Time")),
+	// 			1i32.to_le_bytes().to_vec(),
+	// 		);
 
-			<WorldDataMap<T>>::insert(&self.fps_game_id, Route::External, vec!(&entry));
+	// 		<WorldDataMap<T>>::insert(&self.fps_game_id, Route::External, vec!(&entry));
 			
 
-			// PLATFORMER
-			<AuthoritiesMap<T>>::insert(&self.platformer_game_authority, 
-				vec!((self.platformer_game_id, Access::InternalExternal)));
+	// 		// PLATFORMER
+	// 		<AuthoritiesMap<T>>::insert(&self.platformer_game_authority, 
+	// 			vec!((self.platformer_game_id, Access::InternalExternal)));
 
-			let entry1 : DataEntry= (
-				String::into_bytes(String::from("Kills")),
-				0u32.to_le_bytes().to_vec(),
-			);
-			let entry2 : DataEntry= (
-				String::into_bytes(String::from("Deaths")),
-				0u32.to_le_bytes().to_vec(),
-			);
+	// 		let entry1 : DataEntry= (
+	// 			String::into_bytes(String::from("Kills")),
+	// 			0u32.to_le_bytes().to_vec(),
+	// 		);
+	// 		let entry2 : DataEntry= (
+	// 			String::into_bytes(String::from("Deaths")),
+	// 			0u32.to_le_bytes().to_vec(),
+	// 		);
 
-			<WorldDataMap<T>>::insert(&self.platformer_game_id, Route::External, vec!(&entry1,&entry2));
-		}
-	}
+	// 		<WorldDataMap<T>>::insert(&self.platformer_game_id, Route::External, vec!(&entry1,&entry2));
+	// 	}
+	// }
 
 	fn is_authority<T: Config>(who : &T::AccountId, game : T::GameID) -> (bool, Access)
 	{
@@ -254,7 +254,8 @@ pub mod pallet {
 
 			if ! <WorldDataMap<T>>::contains_key(game, route)
 			{
-				<WorldDataMap<T>>::insert(game, route, vec!(&entry));
+				let new_data_record: DataRecord = bounded_vec![entry];
+				<WorldDataMap<T>>::insert(game, route, new_data_record);
 			}
 			else
 			{
@@ -295,7 +296,7 @@ pub mod pallet {
 				
 				let index : usize = record.iter().position(|cur_entry : &DataEntry| cur_entry.0 == (&new_entry).0).ok_or(Error::<T>::NotFound)?;
 				
-				let exisiting_entry = &mut record[index];
+				let exisiting_entry:&mut DataEntry = &mut record[index];
 
 				//Ensure same length
 				const SUPPORTED_BYTE_LENGTH : usize = 4;
@@ -322,7 +323,7 @@ pub mod pallet {
 				let result_numeric = existing_numeric + incoming_numeric;
 				let result_numeric = result_numeric.to_le_bytes();
 
-				exisiting_entry.1 = result_numeric.to_vec(); 
+				exisiting_entry.1 = Sval::truncate_from(result_numeric.into()); 
 
 				Ok(())
 			})?;
@@ -364,7 +365,8 @@ pub mod pallet {
 
 			if ! <UserDataMap<T>>::contains_key(&map_key, route)
 			{
-				<UserDataMap<T>>::insert(&map_key, route, vec!(entry));
+				let new_data_record: DataRecord = bounded_vec!(entry);
+				<UserDataMap<T>>::insert(&map_key, route, new_data_record);
 			}
 			else
 			{
@@ -388,7 +390,7 @@ pub mod pallet {
 			frame_support::ensure!(! game_exists::<T>(&game), Error::<T>::AlreadyRegisteredGame);
 			
 			// For the registring user, access the permissions
-			let new_entry = (game, Access::InternalExternal);
+			let new_entry:Permission<T> = (game, Access::InternalExternal);
 			
 			// When a user first registers a game, they don't exist in the AuthoritiesMap. Add them.
 			if <AuthoritiesMap<T>>::contains_key(&who)
@@ -400,7 +402,8 @@ pub mod pallet {
 			}
 			else
 			{
-				<AuthoritiesMap<T>>::insert(&who, vec!(new_entry));
+				let new_permissions:BoundedVec<Permission<T>, ConstU32<256>> = bounded_vec!(new_entry);
+				<AuthoritiesMap<T>>::insert(&who, new_permissions);
 			};
 
 			Ok(())
@@ -434,7 +437,8 @@ pub mod pallet {
 				// Create entry.
 				Err(_) => {
 					let new_entry = (game, access);
-					<AuthoritiesMap<T>>::insert(&new_authority, vec!(new_entry));
+					let new_permissions:BoundedVec<Permission<T>, ConstU32<256>> = bounded_vec!(new_entry);
+					<AuthoritiesMap<T>>::insert(&new_authority, new_permissions);
 				}
 			};
 
