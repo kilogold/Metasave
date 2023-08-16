@@ -22,7 +22,7 @@ pub mod pallet {
 	use frame_support::dispatch::fmt::Debug;
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
-	use frame_support::{BoundedVec, bounded_vec};
+	use frame_support::BoundedVec;
 	
 	#[derive(Encode, Decode, Debug, Clone, TypeInfo, PartialEq, MaxEncodedLen)]
 	pub enum Access {
@@ -112,7 +112,10 @@ pub mod pallet {
 
 		BadSize,
 
-		Fake
+		Fake,
+
+		/// When pushing has failed.
+		BoundedVecOverflow,
 	}
 
 	// #[pallet::genesis_config]
@@ -254,7 +257,9 @@ pub mod pallet {
 
 			if ! <WorldDataMap<T>>::contains_key(game, route)
 			{
-				let new_data_record: DataRecord = bounded_vec![entry.clone()];
+				let mut new_data_record: DataRecord = DataRecord::default();
+				new_data_record.try_push(entry.clone()).map_err(|_| Error::<T>::BoundedVecOverflow)?;
+				
 				<WorldDataMap<T>>::insert(game, route, new_data_record);
 			}
 			else
@@ -367,7 +372,9 @@ pub mod pallet {
 
 			if ! <UserDataMap<T>>::contains_key(&map_key, route)
 			{
-				let new_data_record: DataRecord = bounded_vec!(entry);
+				let mut new_data_record: DataRecord = DataRecord::default();
+				new_data_record.try_push(entry.clone()).map_err(|_| Error::<T>::BoundedVecOverflow)?;
+
 				<UserDataMap<T>>::insert(&map_key, route, new_data_record);
 			}
 			else
@@ -404,7 +411,9 @@ pub mod pallet {
 			}
 			else
 			{
-				let new_permissions:BoundedVec<Permission<T>, ConstU32<256>> = bounded_vec!(new_entry);
+				let mut new_permissions = BoundedVec::<Permission<T>, ConstU32<256>>::default(); 
+				new_permissions.try_push(new_entry).map_err(|_| Error::<T>::BoundedVecOverflow)?;
+
 				<AuthoritiesMap<T>>::insert(&who, new_permissions);
 			};
 
@@ -439,7 +448,10 @@ pub mod pallet {
 				// Create entry.
 				Err(_) => {
 					let new_entry = (game, access);
-					let new_permissions:BoundedVec<Permission<T>, ConstU32<256>> = bounded_vec!(new_entry);
+					
+					let mut new_permissions = BoundedVec::<Permission<T>, ConstU32<256>>::default(); 
+					new_permissions.try_push(new_entry).map_err(|_| Error::<T>::BoundedVecOverflow)?;
+
 					<AuthoritiesMap<T>>::insert(&new_authority, new_permissions);
 				}
 			};
