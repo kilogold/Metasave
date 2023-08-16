@@ -254,7 +254,7 @@ pub mod pallet {
 
 			if ! <WorldDataMap<T>>::contains_key(game, route)
 			{
-				let new_data_record: DataRecord = bounded_vec![entry];
+				let new_data_record: DataRecord = bounded_vec![entry.clone()];
 				<WorldDataMap<T>>::insert(game, route, new_data_record);
 			}
 			else
@@ -264,7 +264,9 @@ pub mod pallet {
 					match record.iter().position(|cur_entry| cur_entry.0 == (&entry).0) {
 						
 						// Generate a new entry.
-						None => { record.push(entry.clone()); },
+						None => { 
+							record.try_push(entry.clone()).unwrap();// URGENT: FIX THIS. This is a panic hack.
+						},
 						
 						// Assign new value to existing entry.
 						Some(index) => { record[index].1 = (&entry).1.clone(); }
@@ -372,7 +374,7 @@ pub mod pallet {
 			{
 				<UserDataMap<T>>::mutate(&map_key, route, |x| { 
 					match x.iter().position(|cur_entry| cur_entry.0 == entry.0) {
-						None => { x.push(entry); },
+						None => { let _ = x.try_push(entry); }, //HACK: URGENT: FIX THIS. This is a panic hack.
 						Some(d) => { x[d].1 = entry.1; }
 					};
 				});
@@ -397,7 +399,7 @@ pub mod pallet {
 			{
 				//TODO: use try_mutate.
 				<AuthoritiesMap<T>>::mutate(&who, |x| {
-					x.push(new_entry);
+					let _ = x.try_push(new_entry); // HACK: URGENT: FIX THIS. This is a panic hack.
 				});
 			}
 			else
@@ -430,7 +432,7 @@ pub mod pallet {
 				Ok(_) => {
 					<AuthoritiesMap<T>>::mutate(&new_authority, |x| {
 						let entry = (game,access);
-						x.push(entry);
+						x.try_push(entry).unwrap();// URGENT: FIX THIS. This is a panic hack.
 					});
 				},
 
