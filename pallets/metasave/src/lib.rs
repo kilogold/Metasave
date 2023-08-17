@@ -23,6 +23,7 @@ pub mod pallet {
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
 	use frame_support::BoundedVec;
+	use scale_info::prelude::string::String;
 	
 	#[derive(Encode, Decode, Debug, Clone, TypeInfo, PartialEq, MaxEncodedLen)]
 	pub enum Access {
@@ -81,7 +82,7 @@ pub mod pallet {
 	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, BoundedVec<Permission<T>, ConstU32<256_u32>>, ValueQuery>;
 
 	// Pallets use events to inform users when important changes are made.
-	// https://docs.substrate.io/v3/runtime/events-and-errors
+	// https://docs.substrate.io/main-docs/build/events-errors/
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
@@ -118,58 +119,73 @@ pub mod pallet {
 		BoundedVecOverflow,
 	}
 
-	// #[pallet::genesis_config]
-	// pub struct GenesisConfig<T: Config> {
-	// 	pub fps_game_authority: T::AccountId,
-	// 	pub fps_game_id: T::GameID,
-	// 	pub platformer_game_authority: T::AccountId,
-	// 	pub platformer_game_id: T::GameID,
-	// }
+	#[pallet::genesis_config]
+	pub struct GenesisConfig<T: Config> {
+		pub fps_game_authority: Option<T::AccountId>,
+		pub fps_game_id: T::GameID,
+		pub platformer_game_authority: Option<T::AccountId>,
+		pub platformer_game_id: T::GameID,
+	}
 
-	// #[cfg(feature = "std")]
-	// impl<T: Config> Default for GenesisConfig<T> {
-	// 	fn default() -> Self {
-	// 		Self { 
-	// 			fps_game_authority: Default::default(),
-	// 			fps_game_id: Default::default(),
-	// 			platformer_game_authority: Default::default(),
-	// 			platformer_game_id: Default::default()
-	// 		}
-	// 	}
-	// }
+	impl<T: Config> Default for GenesisConfig<T> {
+		fn default() -> Self {
+			Self { 
+				fps_game_authority: Default::default(),
+				fps_game_id: Default::default(),
+				platformer_game_authority: Default::default(),
+				platformer_game_id: Default::default()
+			}
+		}
+	}
 
-	// #[pallet::genesis_build]
-	// impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
-	// 	fn build(&self) {
+	#[pallet::genesis_build]
+	impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
+		fn build(&self) {
 
-	// 		// FPS
-	// 		<AuthoritiesMap<T>>::insert(&self.fps_game_authority, 
-	// 			vec!((self.fps_game_id, Access::InternalExternal)));
+			if self.fps_game_authority.is_none() || self.platformer_game_authority.is_none()
+			{
+				//TODO: Log some error to notify about bad genesis config.
+				return;
+			}
 
-	// 		let entry : DataEntry= (
-	// 			String::into_bytes(String::from("Time")),
-	// 			1i32.to_le_bytes().to_vec(),
-	// 		);
+			let fps_game_authority = self.fps_game_authority.clone().unwrap();
+			let platformer_game_authority = self.platformer_game_authority.clone().unwrap();
 
-	// 		<WorldDataMap<T>>::insert(&self.fps_game_id, Route::External, vec!(&entry));
+			// FPS
+			let mut fps_game_new_permissions = BoundedVec::<Permission<T>, ConstU32<256>>::default();
+			fps_game_new_permissions.try_push((self.fps_game_id, Access::InternalExternal)).unwrap();// URGENT: FIX THIS. This is a panic hack.
+			<AuthoritiesMap<T>>::insert(&fps_game_authority, fps_game_new_permissions);
+
+			let entry : DataEntry = (
+				String::into_bytes(String::from("Time")).try_into().unwrap(),
+				1i32.to_le_bytes().to_vec().try_into().unwrap(),
+			);
+
+			let mut fps_game_new_data_record: DataRecord = DataRecord::default();
+			let _ = fps_game_new_data_record.try_push(entry.clone());
+			<WorldDataMap<T>>::insert(&self.fps_game_id, Route::External, fps_game_new_data_record);
 			
 
-	// 		// PLATFORMER
-	// 		<AuthoritiesMap<T>>::insert(&self.platformer_game_authority, 
-	// 			vec!((self.platformer_game_id, Access::InternalExternal)));
+			// PLATFORMER
+			let mut platformer_game_new_permissions = BoundedVec::<Permission<T>, ConstU32<256>>::default();
+			let _ = platformer_game_new_permissions.try_push((self.platformer_game_id, Access::InternalExternal)).unwrap();// URGENT: FIX THIS. This is a panic hack.
+			<AuthoritiesMap<T>>::insert(&platformer_game_authority, platformer_game_new_permissions);
 
-	// 		let entry1 : DataEntry= (
-	// 			String::into_bytes(String::from("Kills")),
-	// 			0u32.to_le_bytes().to_vec(),
-	// 		);
-	// 		let entry2 : DataEntry= (
-	// 			String::into_bytes(String::from("Deaths")),
-	// 			0u32.to_le_bytes().to_vec(),
-	// 		);
+			let entry1 : DataEntry= (
+				String::into_bytes(String::from("Kills")).try_into().unwrap(),
+				0u32.to_le_bytes().to_vec().try_into().unwrap(),
+			);
+			let entry2 : DataEntry= (
+				String::into_bytes(String::from("Deaths")).try_into().unwrap(),
+				0u32.to_le_bytes().to_vec().try_into().unwrap(),
+			);
 
-	// 		<WorldDataMap<T>>::insert(&self.platformer_game_id, Route::External, vec!(&entry1,&entry2));
-	// 	}
-	// }
+			let mut platformer_game_new_data_record: DataRecord = DataRecord::default();
+			let _ = platformer_game_new_data_record.try_push(entry1.clone());
+			let _ = platformer_game_new_data_record.try_push(entry2.clone());
+			<WorldDataMap<T>>::insert(&self.platformer_game_id, Route::External, platformer_game_new_data_record);
+		}
+	}
 
 	fn is_authority<T: Config>(who : &T::AccountId, game : T::GameID) -> (bool, Access)
 	{

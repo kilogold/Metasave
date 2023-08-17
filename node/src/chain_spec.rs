@@ -1,5 +1,5 @@
 use node_template_runtime::{
-	AccountId, AuraConfig, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, Signature,
+	AccountId, AuraConfig, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, MetasaveConfig, Signature,
 	SudoConfig, SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
@@ -148,6 +148,12 @@ fn testnet_genesis(
 		grandpa: GrandpaConfig {
 			authorities: initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect(),
 			..Default::default()
+		},
+		metasave: MetasaveConfig {
+			fps_game_authority : Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
+			fps_game_id : 0,
+			platformer_game_authority : Some(get_account_id_from_seed::<sr25519::Public>("Bob")),
+			platformer_game_id : 1
 		},
 		sudo: SudoConfig {
 			// Assign network admin rights.
