@@ -9,7 +9,7 @@
 
 ## Product Presentation
 (click to play)
-[![image](https://user-images.githubusercontent.com/1028926/145700359-f9560a24-8481-49a2-8d86-f44d652dae82.png)](https://www.youtube.com/watch?v=Xo_HGlWKlY0)
+[![image](https://github.com/kilogold/Metasave/assets/1028926/fc7c30e4-927a-43b4-a5cc-7ccf31be446d)](https://youtu.be/42r33VnvF3Q)
 
 ## Video Tutorial
 (click to play)
