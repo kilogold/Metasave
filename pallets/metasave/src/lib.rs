@@ -24,7 +24,7 @@ pub mod pallet {
 	use frame_system::pallet_prelude::*;
 	use frame_support::BoundedVec;
 	use scale_info::prelude::string::String;
-	
+
 	#[derive(Encode, Decode, Debug, Clone, TypeInfo, PartialEq, MaxEncodedLen)]
 	pub enum Access {
 		External,
@@ -65,10 +65,10 @@ pub mod pallet {
 			+ MaxEncodedLen;
 	}
 
-	pub(super) type Skey = BoundedVec<u8, ConstU32<256_u32>>;
-	pub(super) type Sval = BoundedVec<u8, ConstU32<256_u32>>;
+	pub(super) type Skey = BoundedVec<u8, ConstU32<16_u32>>;
+	pub(super) type Sval = BoundedVec<u8, ConstU32<16_u32>>;
 	pub(super) type DataEntry = (Skey,Sval);
-	pub(super) type DataRecord = BoundedVec<DataEntry, ConstU32<256_u32>>;
+	pub(super) type DataRecord = BoundedVec<DataEntry, ConstU32<16_u32>>;
 	pub(super) type Permission<T> = (<T as self::Config>::GameID, Access);
 	pub(super) type UserID<T> = (<T as self::Config>::GameID, <T as frame_system::Config>::AccountId);
 
@@ -79,7 +79,7 @@ pub mod pallet {
 	pub(super) type UserDataMap<T: Config> = StorageDoubleMap<_, Twox64Concat, UserID<T>, Twox64Concat, Route, DataRecord, ValueQuery>;
 
 	#[pallet::storage]
-	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, BoundedVec<Permission<T>, ConstU32<256_u32>>, ValueQuery>;
+	pub(super) type AuthoritiesMap<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, BoundedVec<Permission<T>, ConstU32<16_u32>>, ValueQuery>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/main-docs/build/events-errors/
@@ -152,7 +152,7 @@ pub mod pallet {
 			let platformer_game_authority = self.platformer_game_authority.clone().unwrap();
 
 			// FPS
-			let mut fps_game_new_permissions = BoundedVec::<Permission<T>, ConstU32<256>>::default();
+			let mut fps_game_new_permissions = BoundedVec::<Permission<T>, ConstU32<16_u32>>::default();
 			fps_game_new_permissions.try_push((self.fps_game_id, Access::InternalExternal)).unwrap();// URGENT: FIX THIS. This is a panic hack.
 			<AuthoritiesMap<T>>::insert(&fps_game_authority, fps_game_new_permissions);
 
@@ -167,7 +167,7 @@ pub mod pallet {
 			
 
 			// PLATFORMER
-			let mut platformer_game_new_permissions = BoundedVec::<Permission<T>, ConstU32<256>>::default();
+			let mut platformer_game_new_permissions = BoundedVec::<Permission<T>, ConstU32<16_u32>>::default();
 			let _ = platformer_game_new_permissions.try_push((self.platformer_game_id, Access::InternalExternal)).unwrap();// URGENT: FIX THIS. This is a panic hack.
 			<AuthoritiesMap<T>>::insert(&platformer_game_authority, platformer_game_new_permissions);
 
@@ -427,7 +427,7 @@ pub mod pallet {
 			}
 			else
 			{
-				let mut new_permissions = BoundedVec::<Permission<T>, ConstU32<256>>::default(); 
+				let mut new_permissions = BoundedVec::<Permission<T>, ConstU32<16_u32>>::default(); 
 				new_permissions.try_push(new_entry).map_err(|_| Error::<T>::BoundedVecOverflow)?;
 
 				<AuthoritiesMap<T>>::insert(&who, new_permissions);
@@ -465,7 +465,7 @@ pub mod pallet {
 				Err(_) => {
 					let new_entry = (game, access);
 					
-					let mut new_permissions = BoundedVec::<Permission<T>, ConstU32<256>>::default(); 
+					let mut new_permissions = BoundedVec::<Permission<T>, ConstU32<16_u32>>::default(); 
 					new_permissions.try_push(new_entry).map_err(|_| Error::<T>::BoundedVecOverflow)?;
 
 					<AuthoritiesMap<T>>::insert(&new_authority, new_permissions);
