@@ -4,15 +4,15 @@
 
 # Metasave
 ## Video Intro 
-(click to play)
+(click to play)  
 [![image](https://user-images.githubusercontent.com/1028926/141672480-4ab24560-a71d-4fe2-bf7f-845a9053e0af.png)](https://www.youtube.com/watch?v=rfkjQQ0yccw)
 
 ## Product Presentation
-(click to play)
-[![image](https://github.com/kilogold/Metasave/assets/1028926/fc7c30e4-927a-43b4-a5cc-7ccf31be446d)](https://youtu.be/42r33VnvF3Q)
+(click to play)  
+[![image](docs/logo.png)](https://youtu.be/42r33VnvF3Q)
 
 ## Video Tutorial
-(click to play)
+(click to play)  
 [![image](https://user-images.githubusercontent.com/1028926/139475111-90bc8c40-ef4a-4c10-a520-7ff8d3468668.png)](https://www.youtube.com/watch?v=oZd8Vu2ZqiQ)
 
 The following are the resources illustrated in the video:
