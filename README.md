@@ -59,34 +59,32 @@ In the diagram below, we explore how to bring [Final Fantasy VII Remake](https:/
 ![image](https://user-images.githubusercontent.com/1028926/139705304-0e95736c-9843-4a55-ac29-c593a15854f2.png)
 **Why not just tokenize GIL (like an ERC-20)?**  
 While tokenization is a valid (and sometimes ideal) strategy, it needs to be carefully considered...  
-Tokenization often leads to relinquishing control of asset utility, which can adversely affect game design & balance. By restricting the data to a player's save file, the game designer is able to retain the quality control of their game's experience (the token asset doesn't run rampant through DeFi protocols). Furthermore, tokens alone are not enough to provide bespoke verification. In the example above, it is not enough to be able to afford the item. As a player, you must also progress far enough into the game in order to qualify by defeating Bahamut. The only way to accomplish this in a tokenized world is to mint yet another token (like an achievement) to track the progress. Ultimately, we end up juggling many tokens for a single game, which may be costly to transfer to other wallets/accounts, and/or also introduce many game-explot vectors (or even facilitate an unintended pay-2-win model via trading achievement tokens).
+Tokenization often leads to relinquishing control of asset utility, which can adversely affect game design & balance. By restricting the data to a player's save file, the game designer is able to retain the quality control of their game's experience (the token asset doesn't run rampant through DeFi protocols). Furthermore, tokens alone are not enough to provide bespoke verification. In the example above, it is not enough to be able to afford the item. As a player, you must also progress far enough into the game in order to qualify by defeating Bahamut. The only way to accomplish this in a tokenized world is to mint yet another token (like an achievement) to track the progress. Ultimately, we end up juggling many tokens for a single game, which may be costly to transfer to other wallets/accounts, and/or also introduce many game-explot vectors (or even facilitate an unintended Pay-To-Win model via trading achievement tokens).
 
 # Tech Specs
 ## Demo Usage
-There is a [hosted demo node](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fmetasave.westcentralus.cloudapp.azure.com%3A443#/extrinsics) for evaluation purposes. 
-The node is running in temporary dev mode, so default accounts (Alice/Bob/Charlie/Dave/Eve/Ferdie) are accessible. For a thorough walkthrough of usage, please refer to the [video tutorial](https://www.youtube.com/watch?v=oZd8Vu2ZqiQ) linked at the top of this readme.  
-
+ For a thorough walkthrough of usage, please refer to the [video tutorial](https://www.youtube.com/watch?v=oZd8Vu2ZqiQ) linked at the top of this readme.  
 General steps are outlined as follows:
-* Visit deployment node's extrinsics page.
-* Select **templateModule** from the modules dropdown to expose extrinsics.
-* Register a game/world.
-* Add an authority (optional, since the account registering the game is an authority by default).
-* Update world data record to introduce any data to be parsed by a game client (optional, games clients/servers can do this on runtime).
+1) Connect to the node using [Polkadot.js](https://polkadot.js.org/apps/#/explorer).
+1) Select the `metasave` module from the extrinsics panel.
+1) Register a game/world.
+1) Add an authority (Optional. The account registering the game is an authority by default).
+1) Update world data record to introduce any data to be parsed by a game client (Optional. Games clients/servers can do this on runtime).
 
 ## Tech Stack
-*  Extended version of the [Substrate .Net API](https://github.com/ajuna-network/SubstrateNetApi), already included within the game templates (see Deployment below).
+*  [Substrate Gaming SDK](https://github.com/SubstrateGaming), already included within the game templates (see Deployment below).
 *  [Unity3D 2019.4.23](https://unity3d.com/unity/whats-new/2019.4.23)
 
 ## Deployment
-*  Follow typical [node template](https://github.com/substrate-developer-hub/substrate-node-template) deployment (Metasave pallet is already included and installed).
-*  Clone game templates.
-    * [Polkadot_Platformer](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_Platformer)
-    * [Polkadot_FPS](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_FPS)
-*  Open either game demo with Unity and play.
+1)  Follow typical [node template](https://github.com/substrate-developer-hub/substrate-node-template/tree/v0.9.40) deployment (Metasave pallet is already included and installed). For this build, the node requires to be run in dev mode (`--dev` flag), so default accounts (Alice/Bob/Charlie/Dave/Eve/Ferdie) are accessible.  
+1) Clone game templates.
+    * [Polkadot_Platformer](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_Platformer?version=GBweb3-hackfest)
+    * [Polkadot_FPS](https://dev.azure.com/bonillakelvin/MetaSave/_git/Polkadot_FPS?version=GBweb3-hackfest)
+1)  Open either game demo with Unity and play.
 
 The Substrate node & game templates are preconfigured for local networking. You can redirect either game template's endpoint to the hosted demo node as well. Changing endpoints requires modifications only on the game clients.
 
 ## Notes
 *  If you are unable to connect to the node via Polkadot.js, you are probably getting an invalid certificate error. Please follow the [official Polkadot instructions](https://wiki.polkadot.network/docs/maintain-wss#importing-the-certificate) to resolve this.
-*  Metasave is preconfigured to have default Alice & Bob accounts registered with their respective games (see video for Alice & Bob setup). You may find the preconfiguration in the pallet's [lib.rs](https://github.com/kilogold/HackWeek-Sept2021/blob/daba356a66f1b5115c699543270c48332e3b2db4/pallets/template/src/lib.rs#L148).
-*  Metasave pallet introduces custom data types that Polkadot.js is now aware of. Paste the [provided definitions](pallets/template/src/polkadotJS_types.json) into the [developer settings](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fmetasave.westcentralus.cloudapp.azure.com%3A443#/settings/developer) page.
+*  Metasave is preconfigured to have default Alice & Bob accounts registered with their respective games (see video for Alice & Bob setup). You may find the preconfiguration in the pallet's [lib.rs](https://github.com/kilogold/Metasave/blob/58ea78ee58966c82800c13d34c44e67bfc705c3e/pallets/metasave/src/lib.rs#L142).
+
